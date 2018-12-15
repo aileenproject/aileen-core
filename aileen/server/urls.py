@@ -49,9 +49,4 @@ urlpatterns = [
         api.post_tmux_status,
         name="post_tmux_status",
     ),
-    url(
-        r"^api/devices_by_box_id/(?P<box_id>[^/]+)/",
-        api.devices_by_box_id,
-        name="devices_by_box_id",
-    ),
 ]

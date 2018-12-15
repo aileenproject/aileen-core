@@ -20,8 +20,7 @@
       chartContainerId: "heatmapContainer",
       data: data,
       minDate: minDate,
-      maxDate: maxDate,
-      initMonth: maxDate.startOf("month").format("YYYY-MM")
+      maxDate: maxDate
     });
 
     const myRadialBarChart = radialBarChart({
@@ -29,13 +28,17 @@
       data: data,
       minDate: minDate,
       maxDate: maxDate,
-      initDateRangeStart: maxDate.startOf("month").format("YYYY-MM-DD"),
-      initDateRangeEnd: maxDate.endOf("month").format("YYYY-MM-DD")
+      initDateRangeStart: maxDate
+        .clone()
+        .subtract(30, "days")
+        .format("YYYY-MM-DD"),
+      initDateRangeEnd: maxDate.format("YYYY-MM-DD")
     });
 
     window.addEventListener("heatmap-date-change", event => {
       const heatmapDate = event.detail.heatmapDate;
-      myRadialBarChart.updateDayBars(heatmapDate);
+      const maxDevices = event.detail.maxDevices;
+      myRadialBarChart.updateDayBars(heatmapDate, maxDevices);
     });
   });
 })();

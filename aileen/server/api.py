@@ -158,27 +158,3 @@ def average_number_of_devices_seen_by_box(request):
             box_info_list.append(box_info)
 
     return JsonResponse(box_info_list, safe=False)
-
-
-
-# box
-def devices_by_box_id(request, box_id):
-    """
-    FOR D3
-    Returns a list of dictionaries containing the following
-    [{'time': '<tz-naive timestamp>', 'devices': 115},{...}]
-    """
-    seen_by_hour_df = prepare_df_datetime_index(
-        SeenByHour.pdobjects.filter(box_id=box_id).to_dataframe(
-            fieldnames=["hour_start", "seen", "seen_also_in_preceding_hour"]
-        ),
-        time_column="hour_start",
-    )
-    seen_by_hour_df = seen_by_hour_df.reset_index().rename(columns={"seen": "devices"})
-    seen_by_hour_df["time"] = seen_by_hour_df["time"].map(
-        lambda x: x.replace(tzinfo=None).timestamp()
-    )
-
-    data = seen_by_hour_df.to_dict("records")
-
-    return JsonResponse(data, safe=False)

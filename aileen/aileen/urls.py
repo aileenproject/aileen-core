@@ -17,6 +17,7 @@ urlpatterns = [
         ),
         name="favicon",
     ),
+    url(r"^", include("data.urls", namespace='data')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.AILEEN_MODE in ("server", "both"):

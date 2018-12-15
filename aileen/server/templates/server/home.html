@@ -86,7 +86,6 @@
 
     function onEachFeature(feature, layer) {
       var props = feature.properties;
-      console.log(props)
       var deviceURL = `/box/${props.box_id}`;
       var content = `<h3>${props.name}</h3>
         <h5>Daily devices: ${props.average_devices_per_day}</h5>

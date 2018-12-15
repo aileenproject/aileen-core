@@ -12,3 +12,4 @@ aileen/data/migrations/__pycache__/
 aileen/db.sqlite3
 aileen/server/__pycache__/
 env_aileen/
+server/migrations/__pycache__/

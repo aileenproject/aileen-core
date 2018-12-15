@@ -22,10 +22,10 @@
 {% include "data/_charts.html" %}
 
 <script type="text/javascript">
-  const aileen_data = `{% url "box:devices" %}?={{ box_id }}`
+  const aileen_data = `{% url "data:devices"%}`;
 </script>
 <script src="{% static 'box/js/heatmapchart.js' %}"></script>
-<script src="{% static 'box/js/radialbarchart.js' %}"></script>
+<script src="{% static 'data/js/radialbarchart.js' %}"></script>
 <script src="{% static 'box/js/main.js' %}"></script>
 
 
