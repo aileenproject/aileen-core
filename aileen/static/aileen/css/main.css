@@ -1,0 +1,236 @@
+html, body {
+    height:100%;
+    font-size: 12px;
+    font-family: 'TitilliumWeb-Regular', sans-serif !important;
+}
+
+.leaflet-control-attribution a{ display: none;}
+.leaflet-control-attribution div{ display: none;}
+
+.monthly-activity-label {
+  font-size: 20px;
+}
+
+
+#heatmapContainer .heatmap-title-text {
+  font-size: 20px;
+  font-family: 'TitilliumWeb-Regular', sans-serif !important;
+
+}
+
+.bar-chart-label{
+  font-size: 14px;
+}
+
+.chart-titles{
+  text-align: center;
+}
+
+.info-paragraph {
+    width: 300px;
+    table-layout: fixed;
+    padding: 0 0 0 0;
+}
+
+.three-little-dots {
+  cursor: pointer;
+}
+
+.infoButton{
+  cursor: help !important;
+}
+
+
+
+.my-table {
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+}
+
+.aileen-widget-header{
+  font-size: 18px;
+  font-style: bold;
+  color: #1D5464;
+  opacity: 1.0;
+}
+
+.aileen-card{
+  background-color: rgba(166, 204, 205, 0.6);
+}
+
+/* .navbar-light{
+  border-bottom: 3px solid;
+  color: rgb(216, 216, 96);
+} */
+
+.nav-info{
+font-size: 22px !important;
+color: #1D5464 !important;
+}
+
+.title-text{
+  font-size: 16px;
+}
+
+
+
+text {
+  font-family: 'TitilliumWeb-Regular', sans-serif !important;
+}
+
+.month-select{
+  margin-bottom: 0px;
+}
+
+.aileen-body{
+  background-color: #ffffff;
+}
+
+.aileen-d3-container {
+  margin-top: 15px;
+  height: 60vh;
+  min-height: 400px;
+  position: relative;
+}
+
+.aileen-leaflet {
+  padding-top: 1%;
+  padding-right: 1%;
+  padding-bottom: 1%;
+  padding-left: 1%;
+  background: rgba(166, 204, 205, 0.6);
+  border-radius: 20px;
+}
+
+.aileen-main-div {
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-top: 0.5%;
+  padding-bottom: 1%;
+}
+
+.h-divider{
+ margin-top:10px;
+ margin-bottom:0px;
+ height:1px;
+ width:100%;
+ border-top:5px solid rgb(255, 255, 255);
+}
+
+
+li .alignRight {
+  direction: rtl;
+}
+
+svg {
+  font-size: 10px;
+  font-family: 'TitilliumWeb-Regular', sans-serif !important;
+}
+
+.chart-tooltip {
+  opacity: 0;
+  position: fixed;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 0.5em 0.75em;
+  border-radius: 0.5em;
+  pointer-events: none;
+  color: #fff;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 9000;
+}
+
+.chart-control {
+  width: 100%;
+  position: absolute;
+  padding-right: 15px;
+}
+
+#radialBarDatePicker {
+  min-width: 150px;
+}
+
+.nav-item .dropdown-toggle::after {
+    display: none;
+}
+
+.nav-link .btn-outline-primary {
+    color: #207E82 !important;
+    border-color: #207E82 !important;
+}
+
+.nav-link .btn-outline-primary:hover {
+    color: #fff !important;
+    background-color: #207E82 !important;
+    border-color: #207E82 !important;
+}
+
+.nav-info, .nav-info:hover {
+  color: rgba(0,0,0,.9);
+    padding-top: .3125rem;
+    padding-bottom: .3125rem;
+    margin-right: 1rem;
+    font-size: 1.25rem;
+    text-decoration-line: none;
+}
+
+.aileen-widget{
+  color: #1D5464;
+  font-size: 20px;
+  text-decoration: underline;
+}
+
+.aileen-button .btn-outline-primary {
+    color: #207E82 !important;
+    border-color: #207E82 !important;
+    font-size: 14px;
+}
+
+.aileen-button .btn-outline-primary:hover {
+    color: #fff !important;
+    background-color: #207E82 !important;
+    border-color: #207E82 !important;
+}
+
+.tooltip {
+  font-family: 'TitilliumWeb-Regular', sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: left;
+  text-align: start;
+  text-decoration: none;
+  text-shadow: none;
+  text-transform: none;
+  letter-spacing: normal;
+  word-break: normal;
+  word-spacing: normal;
+  word-wrap: normal;
+  white-space: normal;
+}
+
+.tooltip-inner {
+    white-space:pre-wrap;
+    max-width: 300px;
+}
+
+
+/* Amiriqbalmcs CODE 05-12-2018 */
+
+@media(min-width:320px) and (max-width:767px){
+  .nav-item.active,.navbar-nav.ml-auto{text-align:center !important;top: -3px !important;position: absolute !important;right: 50px !important; }
+  .fas.fa-ellipsis-v{top:-46px !important;position:absolute !important;right:0 !important;left:90px !important;font-size:15px !important;}
+  .navbar-nav .dropdown-menu{float:none !important;left:0 !important;width:120px !important;text-align:center !important;margin:0 auto !important;right:-12px !important;top:-10px !important;position:absolute !important;}
+  .navbar-toggler{float:left !important; z-index: 99999;}
+  .nav-info{z-index: -1; position:absolute !important;left:0 !important;right:0 !important;}
+  .navbar.navbar-expand-md.navbar-light{display:inherit!important; z-index: 999999;}
+  .aileen-button{width: 50% !important; float: left !important;}
+}
+
+/* Amiriqbalmcs CODE 05-12-2018 */

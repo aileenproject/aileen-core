@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+{% load bootstrap3 %}
+{% block content %}
+
+<!-- navbar -->
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+    <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="navbar-brand" target="_blank"><img src="{% static "aileen/images/aileen_logo.png" %}" width="135" height="40" class="d-inline-block align-top" alt="img not found"></a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="jumbotron container" style="margin-top: 20px">
+  <h3>Visit <a href='http://www.aileenproject.org'>aileenproject.org</a> to learn more</h3>
+  <p></p>
+  <h5>If you don't have an account then please contact: <a>theaileenproject@gmail.com</a></h4>
+
+  <form  method="POST">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    <input type="submit" class='btn btn-primary' value="Login">
+  </form>
+</div>
+
+{% endblock %}

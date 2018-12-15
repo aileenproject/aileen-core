@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block content %}
+  {% load staticfiles %}
+  {% load static %}
+  {% load leaflet_tags %}
+  {% leaflet_js %}
+  {% leaflet_css %}
+  {% load humanize %}
+
+
+  <nav class="navbar navbar-expand-md navbar-light bg-light">
+      <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+          <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                <a class="navbar-brand" target="_blank" href='https://www.aileenproject.org'><img src="{% static "aileen/images/aileen_logo.png" %}" width="135" height="40" class="d-inline-block align-top" alt="img not found"></a>
+              </li>
+          </ul>
+      </div>
+      <div class="mx-auto ml-auto w-100 order-1 order-md-0 text-center">
+        <a class="nav-info">
+           <b>{{box_name}}</b></a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+      </div>
+      <div class="nav navbar-nav navbar-right mx-auto w-100">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'server:home' %}">
+              <button class="btn btn-outline-primary my-2 my-sm-0">Home</button>
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle three-little-dots" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fas fa-ellipsis-v my-2 my-sm-0 p-2"></i>
+            </a>
+              <!-- custom css class 'scrollable-menu' is called -->
+              <div class="dropdown-menu dropdown-menu-right scrollable-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="{% url 'server:logout' %}">
+                  Logout
+                </a>
+              </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+  <div class="container-fluid aileen-main-div">
+    <!-- kpis -->
+    <div class="row">
+      <div class="col-md-1-12">
+        <h3 class='chart-titles' style='padding-left: 20px;'>
+          <img data-toggle='tool-tip'
+            data-title='Data spanning from the time of installation to right now. Started : {{ kpis.running_since | naturaltime }}'
+            src="https://img.icons8.com/material/50/000000/info.png"
+            class="infoButton"
+            height='20'>
+              {{box_name}} Overall</h3>
+      </div>
+    </div>
+
+    {% include "data/_kpis.html" %}
+
+  <!-- Charts -->
+    <div class="row">
+      <div class="chart-tooltip"></div>
+      <div class="col-md-6 col-lg-6">
+        <span class="glyphicon glyphicon-info-sign"></span>
+
+        <h3 class='chart-titles'>
+          <img data-toggle='tool-tip'
+            title='This heat map shows the total number of unique devices which were seen per hour. You can click and drag the chart to the left to see more days, if the data is available. Click on a single day (column) of the heat map to compare it to averages using the radial chart.'
+            src="https://img.icons8.com/material/50/000000/info.png"
+            class="infoButton"
+            height='20'>
+               Monthly Heat Map</h3>
+               <h5 class="chart-titles">Total devices seen per hour over 31 days</h5>
+        <div class='aileen-d3-container' id="heatmapContainer"></div>
+      </div>
+      <div class="col-md-6 col-lg-6">
+        <h3 class='chart-titles'>
+          <img data-toggle='tool-tip'
+            data-title='This 24 hour clock shows the average number of devices seen each hour over a Selected Date Range. This data can be further refined using the Filter. Select a day from the Monthly Heat Map to compare a single day over a chosen average.'
+            src="https://img.icons8.com/material/50/000000/info.png"
+            class="infoButton"
+            height='20'>
+            Compare Selected Day with Average</h3>
+        <div class='aileen-d3-container' id="radialBarContainer"></div>
+      </div>
+    </div>
+    <div class="h-divider"></div>
+  </div>
+
+  <!-- leaflet -->
+  <style media="screen">
+  .leaflet-container { height: 100%; min-height: 500px; }
+  </style>
+  <div class="row">
+    <div class="col-md-12">
+      {% leaflet_map "main" %}
+    </div>
+  </div>
+
+  <!-- charts -->
+  <script type="text/javascript">
+  const aileen_data = `{% url "server:devices_by_box_id" box_id %}`;
+  </script>
+  <script src="{% static 'server/js/box-heatmapchart.js' %}"></script>
+  <script src="{% static 'server/js/box-radialbarchart.js' %}"></script>
+  <script src="{% static 'server/js/box-main.js' %}"></script>
+  <script type="text/javascript">
+  var dataurl = '{% url "server:aileen_box_location" %}';
+  window.addEventListener("map:init", function (event) {
+    var map = event.detail.map;
+
+    var aileen_icon = L.icon({
+        iconUrl: "{% static 'aileen/images/aileen_a_normal.svg' %}",
+        iconSize:     [38, 95],
+        iconAnchor: [38, 65],
+    });
+
+    function onEachFeature(feature, layer) {
+      var props = feature.properties;
+
+      var deviceURL = `/box/${props.box_id}`;
+      var content = `<h3>${props.name}</h3>
+      <h5>Daily devices: ${props.average_devices_per_day}</h5>
+        <a href=${deviceURL}><p>Full Dashboard</p></a>`
+      layer.bindPopup(content);
+    }
+
+    // Download GeoJSON data with Ajax
+    fetch(dataurl)
+      .then(function(resp) {
+        return resp.json();
+      })
+      .then(function(data){
+        L.geoJson(data, {
+          pointToLayer: function(feature, latlng) {
+                  return L.marker(latlng, {icon: aileen_icon});
+          },
+          onEachFeature: onEachFeature,
+
+      }).addTo(map);
+  // Move the map so its on the selected box
+  map.setView(new L.LatLng({{box_coordinates}}[1], {{box_coordinates}}[0]), 12);
+  });
+  });
+  </script>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load staticfiles %}
+
+{% load static %}
+{% load leaflet_tags %}
+{% leaflet_js %}
+{% leaflet_css %}
+
+<link rel="stylesheet" type='text/css' href={% static "server/css/barchart.css" %}>
+
+
+<style media="screen">
+  .leaflet-container { height: 100% }
+</style>
+
+<!-- navbar -->
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+  <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="navbar-brand" target="_blank" href='https://www.aileenproject.org'><img src="{% static "aileen/images/aileen_logo.png" %}" width="135" height="40" class="d-inline-block align-top" alt="img not found"></a>
+        </li>
+    </ul>
+  </div>
+  <div class="mx-auto ml-auto w-100 order-1 order-md-0 text-center">
+    <a class="nav-info">
+       Select a location on the map to learn more</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+  </div>
+  <div class="nav navbar-nav navbar-right mx-auto w-100">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-ellipsis-v my-2 my-sm-0 p-2"></i>
+        </a>
+          <!-- custom css class 'scrollable-menu' is called -->
+          <div class="dropdown-menu dropdown-menu-right scrollable-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="{% url 'server:logout' %}">
+              Logout
+            </a>
+          </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- mainContent -->
+<div class="container-fluid aileen-main-div">
+  <div class="row">
+    <div class="col-md-5">
+          <div class='chart-titles'>
+            <h2>Daily number of devices seen in each location</h2>
+          </div>
+          <div  id="barChartContainer" style="height: 80vh;"></div>
+    </div>
+    <div class='col-md-7 aileen-leaflet' style="height: 80vh;">
+      {% leaflet_map "main" %}
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'server/js/home-barchart.js' %}"></script>
+<script type="text/javascript">
+  const aileen_data = `{% url "server:average_number_of_devices_seen_by_box" %}`;
+  barChart({
+      dataURL: aileen_data,
+      chartContainerId: "barChartContainer"});
+</script>
+
+<script type="text/javascript">
+
+  var dataurl = '{% url "server:aileen_box_location" %}';
+
+
+  window.addEventListener("map:init", function (event) {
+    var map = event.detail.map;
+
+    var aileen_icon = L.icon({
+        iconUrl: "{% static 'aileen/images/aileen_a_normal.svg' %}",
+        iconSize:     [38, 95],
+        iconAnchor: [38, 65],
+    });
+
+    function onEachFeature(feature, layer) {
+      var props = feature.properties;
+      console.log(props)
+      var deviceURL = `/box/${props.box_id}`;
+      var content = `<h3>${props.name}</h3>
+        <h5>Daily devices: ${props.average_devices_per_day}</h5>
+        <a href=${deviceURL}><p>Full Dashboard</p></a>`
+      layer.bindPopup(content);
+    }
+
+    // Download GeoJSON data with Ajax
+    fetch(dataurl)
+      .then(function(resp) {
+        return resp.json();
+      })
+      .then(function(data){
+        L.geoJson(data, {
+          pointToLayer: function(feature, latlng) {
+                  return L.marker(latlng, {icon: aileen_icon});
+          },
+          onEachFeature: onEachFeature,
+
+      }).addTo(map);
+    });
+  });
+
+</script>
+
+
+
+{% endblock %}
