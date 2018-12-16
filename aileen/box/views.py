@@ -12,13 +12,12 @@ def dashboard(request):
     except:
         airodump_ng_status = 'No status available'
 
-    try:
-        kpis = compute_kpis()
-        # customise the kpis
-        kpis['busyness']['by_hour']['num_devices'] = int(kpis['busyness']['by_hour']['num_devices'])
-        kpis['busyness']['by_day']['num_devices'] = int(kpis['busyness']['by_day']['num_devices'])
-    except:
-        kpis = {'none': None }
+    box_id = BoxSettings.objects.last().box_id
+
+    kpis = compute_kpis(box_id)
+    # customise the kpis
+    kpis['busyness']['by_hour']['num_devices'] = int(kpis['busyness']['by_hour']['num_devices'])
+    kpis['busyness']['by_day']['num_devices'] = int(kpis['busyness']['by_day']['num_devices'])
 
     context = {"kpis": kpis, "airodump_ng_status": airodump_ng_status}
     template = "box/dashboard.html"

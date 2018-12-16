@@ -159,9 +159,9 @@ AILEEN_MODE = os.environ.get(
     "AILEEN_MODE", default="box"
 )  # can also be "server" or "both" (for dev purposes)
 if AILEEN_MODE in ("box", "both"):
-    INSTALLED_APPS.append("box")
+    INSTALLED_APPS.extend(("box", "calibration"))
 if AILEEN_MODE in ("server", "both"):
-    INSTALLED_APPS.extend(("server", "calibration"))
+    INSTALLED_APPS.append("server")
 
 #  ---- General Settings
 

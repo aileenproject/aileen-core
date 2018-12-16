@@ -22,7 +22,7 @@ function heatmapChart(options) {
   let xAxisMinDate;
   let xAxisMaxDate;
   let maxDevices;
-
+  
   const allDates = enumerateDaysBetweenDates(
     data[0].date.clone(),
     data[data.length - 1].date.clone()

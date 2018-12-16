@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from data.models import UniqueDevices
 
 
-@login_required
+
 def calibration(request):
 
     all_unique_devices = list(UniqueDevices.objects.values("device_id"))

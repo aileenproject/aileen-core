@@ -24,8 +24,9 @@ def devices_by_box_id(request, box_id):
     )
 
     data = seen_by_hour_df.to_dict("records")
-
+    print(data)
     return JsonResponse(data, safe=False)
+
 
 def devices(request):
     seen_by_hour_df = prepare_df_datetime_index(
@@ -42,6 +43,7 @@ def devices(request):
         lambda x: x.replace(tzinfo=None).timestamp()
     )
 
-    data = seen_by_hour_df.to_dict("records")
 
+    data = seen_by_hour_df.to_dict("records")
+    print(data)
     return JsonResponse(data, safe=False)

@@ -8,7 +8,7 @@
     data.forEach(d => {
       d.time = moment.unix(d.time).utc();
       d.hour = parseInt(d.time.format("H"));
-      d.day = parseInt(d.time.format("D"));
+      d.date = d.time.clone().startOf("day");
       d.dayOfWeek = parseInt(d.time.format("d"));
       d.devices = +d.devices;
     });
