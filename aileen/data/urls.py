@@ -10,9 +10,5 @@ urlpatterns = [
         api.devices_by_box_id,
         name="devices_by_box_id",
     ),
-    url(
-        r"^api/devices/",
-        api.devices,
-        name="devices",
-    ),
+    url(r"^api/devices/", api.devices, name="devices"),
 ]

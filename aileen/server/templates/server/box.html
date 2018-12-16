@@ -62,32 +62,15 @@
     {% include "data/_kpis.html" %}
 
   <!-- Charts -->
-    <div class="row">
-      <div class="chart-tooltip"></div>
-      <div class="col-md-6 col-lg-6">
-        <span class="glyphicon glyphicon-info-sign"></span>
+    {% include "data/_charts.html" %}
+    <script type="text/javascript">
+    const aileen_data = `{% url "data:devices_by_box_id" box_id %}`;
+    </script>
+    <script src="{% static 'data/js/heatmapchart.js' %}"></script>
+    <script src="{% static 'data/js/radialbarchart.js' %}"></script>
+    <script src="{% static 'server/js/d3-main.js' %}"></script>
 
-        <h3 class='chart-titles'>
-          <img data-toggle='tool-tip'
-            title='This heat map shows the total number of unique devices which were seen per hour. You can click and drag the chart to the left to see more days, if the data is available. Click on a single day (column) of the heat map to compare it to averages using the radial chart.'
-            src="https://img.icons8.com/material/50/000000/info.png"
-            class="infoButton"
-            height='20'>
-               Monthly Heat Map</h3>
-               <h5 class="chart-titles">Total devices seen per hour over 31 days</h5>
-        <div class='aileen-d3-container' id="heatmapContainer"></div>
-      </div>
-      <div class="col-md-6 col-lg-6">
-        <h3 class='chart-titles'>
-          <img data-toggle='tool-tip'
-            data-title='This 24 hour clock shows the average number of devices seen each hour over a Selected Date Range. This data can be further refined using the Filter. Select a day from the Monthly Heat Map to compare a single day over a chosen average.'
-            src="https://img.icons8.com/material/50/000000/info.png"
-            class="infoButton"
-            height='20'>
-            Compare Selected Day with Average</h3>
-        <div class='aileen-d3-container' id="radialBarContainer"></div>
-      </div>
-    </div>
+
     <div class="h-divider"></div>
   </div>
 
@@ -100,15 +83,6 @@
       {% leaflet_map "main" %}
     </div>
   </div>
-
-  <!-- charts -->
-  <script type="text/javascript">
-  const aileen_data = `{% url "data:devices_by_box_id" box_id %}`;
-  </script>
-  <script src="{% static 'data/js/heatmapchart.js' %}"></script>
-  <script src="{% static 'data/js/radialbarchart.js' %}"></script>
-  <script src="{% static 'server/js/d3-main.js' %}"></script>
-  
   <script type="text/javascript">
   var dataurl = '{% url "server:aileen_box_location" %}';
   window.addEventListener("map:init", function (event) {
@@ -129,7 +103,6 @@
         <a href=${deviceURL}><p>Full Dashboard</p></a>`
       layer.bindPopup(content);
     }
-
     // Download GeoJSON data with Ajax
     fetch(dataurl)
       .then(function(resp) {
@@ -141,7 +114,6 @@
                   return L.marker(latlng, {icon: aileen_icon});
           },
           onEachFeature: onEachFeature,
-
       }).addTo(map);
   // Move the map so its on the selected box
   map.setView(new L.LatLng({{box_coordinates}}[1], {{box_coordinates}}[0]), 12);

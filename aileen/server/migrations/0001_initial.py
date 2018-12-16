@@ -10,22 +10,29 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='AileenBox',
+            name="AileenBox",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('geom', djgeojson.fields.PointField()),
-                ('box_id', models.CharField(max_length=256)),
-                ('name', models.CharField(max_length=100)),
-                ('description', models.TextField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("geom", djgeojson.fields.PointField()),
+                ("box_id", models.CharField(max_length=256)),
+                ("name", models.CharField(max_length=100)),
+                ("description", models.TextField()),
             ],
             options={
-                'verbose_name': 'Aileen box',
-                'verbose_name_plural': 'Aileen boxes',
+                "verbose_name": "Aileen box",
+                "verbose_name_plural": "Aileen boxes",
             },
-        ),
+        )
     ]

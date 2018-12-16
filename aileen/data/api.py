@@ -35,14 +35,11 @@ def devices(request):
         ),
         time_column="hour_start",
     )
-    seen_by_hour_df = seen_by_hour_df.reset_index().rename(
-        columns={"seen": "devices"}
-    )
+    seen_by_hour_df = seen_by_hour_df.reset_index().rename(columns={"seen": "devices"})
 
     seen_by_hour_df["time"] = seen_by_hour_df["time"].map(
         lambda x: x.replace(tzinfo=None).timestamp()
     )
-
 
     data = seen_by_hour_df.to_dict("records")
     print(data)

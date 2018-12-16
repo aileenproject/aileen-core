@@ -175,7 +175,9 @@ def aggregate_data_to_db():
                 seen_by_day.save()
                 logger.info(f"Saved {seen_by_day}")
 
-        sleep_until_interval_is_complete(start_time, settings.UPLOAD_INTERVAL_IN_SECONDS)
+        sleep_until_interval_is_complete(
+            start_time, settings.UPLOAD_INTERVAL_IN_SECONDS
+        )
 
         print()
 

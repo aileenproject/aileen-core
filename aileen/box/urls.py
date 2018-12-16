@@ -4,6 +4,4 @@ from box import views
 
 app_name = "box"
 
-urlpatterns = [
-    url(r"^$", views.dashboard, name="dashboard"),
-]
+urlpatterns = [url(r"^$", views.dashboard, name="dashboard")]

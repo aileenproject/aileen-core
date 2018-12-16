@@ -106,9 +106,12 @@ def upload_latest_aggregations():
 
     logger.info(
         f"I collected {len(seen_by_hour)} hour aggregation(s) and {len(seen_by_day)} day aggregation(s) to send,"
-        f" starting at {seen_by_hour.first().hour_start}.")
+        f" starting at {seen_by_hour.first().hour_start}."
+    )
     if latest_aggregation_time is not None:
-        logger.info(f" - next time I will not upload finished times up until {latest_aggregation_time}.")
+        logger.info(
+            f" - next time I will not upload finished times up until {latest_aggregation_time}."
+        )
 
     payload = dict(
         seen_by_hour=serialize("json", seen_by_hour),

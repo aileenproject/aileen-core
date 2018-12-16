@@ -11,25 +11,52 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('data', '0001_initial'),
-    ]
+    dependencies = [("data", "0001_initial")]
 
     operations = [
         migrations.CreateModel(
-            name='BoxSettings',
+            name="BoxSettings",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('box_id', models.CharField(default=uuid.uuid4, editable=False, max_length=256)),
-                ('server_url', models.URLField()),
-                ('upload_token', models.CharField(max_length=120)),
-                ('aggregations_uploaded_until', models.DateTimeField(null=True)),
-                ('events_uploaded_until', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='data.DevicesEvents')),
-                ('tmux_status_uploaded_until', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='data.TmuxStatus')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "box_id",
+                    models.CharField(
+                        default=uuid.uuid4, editable=False, max_length=256
+                    ),
+                ),
+                ("server_url", models.URLField()),
+                ("upload_token", models.CharField(max_length=120)),
+                ("aggregations_uploaded_until", models.DateTimeField(null=True)),
+                (
+                    "events_uploaded_until",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="data.DevicesEvents",
+                    ),
+                ),
+                (
+                    "tmux_status_uploaded_until",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="data.TmuxStatus",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Aileen box settings',
-                'verbose_name_plural': 'Settings for this aileen box',
+                "verbose_name": "Aileen box settings",
+                "verbose_name_plural": "Settings for this aileen box",
             },
-        ),
+        )
     ]

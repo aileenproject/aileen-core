@@ -55,7 +55,7 @@ def box(request, box_id):
         "box_id": box_id,
         "box_coordinates": box_coordinates,
         "kpis": kpis,
-        'busiest_hour_range':busiest_hour_range,
+        "busiest_hour_range": busiest_hour_range,
         "airodump_ng_status": airodump_ng_status,
     }
 

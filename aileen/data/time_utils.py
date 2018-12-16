@@ -56,5 +56,3 @@ def sleep_until_interval_is_complete(start_time, interval_in_seconds):
     rest_interval_in_seconds = interval_in_seconds - (run_time % interval_in_seconds)
     logger.info("Sleeping for %.2f seconds ..." % rest_interval_in_seconds)
     time.sleep(rest_interval_in_seconds)
-
-

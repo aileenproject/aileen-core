@@ -11,11 +11,11 @@ from django.conf import settings
 from data.models import SeenByHour, SeenByDay
 
 
+data_dir = os.path.join(settings.BASE_DIR, "data/dummy_data/")
 
-data_dir = os.path.join(settings.BASE_DIR, 'data/dummy_data/')
+seen_by_hour = os.path.join(data_dir, "seenbyhour.csv")
+seen_by_day = os.path.join(data_dir, "seenbyday.csv")
 
-seen_by_hour = os.path.join(data_dir, 'seenbyhour.csv')
-seen_by_day  = os.path.join(data_dir, 'seenbyday.csv')
 
 def randomizeRow(df_row: int):
     return int(np.random.normal(df_row, df_row * 0.2, 1))
@@ -23,8 +23,8 @@ def randomizeRow(df_row: int):
 
 def generate_random_data(options: dict):
 
-    number_of_iterations = options['number_of_iterations']
-    box_id = options['box_id']
+    number_of_iterations = options["number_of_iterations"]
+    box_id = options["box_id"]
 
     df = pd.read_csv(seen_by_hour)
     day_df = pd.read_csv(seen_by_day)
@@ -42,16 +42,18 @@ def generate_random_data(options: dict):
     for iteration in range(number_of_iterations):
         for index, row in df.iterrows():
             seen = randomizeRow(row["seen"])
-            seen_also_in_preceding_hour = randomizeRow(row["seen_also_in_preceding_hour"])
+            seen_also_in_preceding_hour = randomizeRow(
+                row["seen_also_in_preceding_hour"]
+            )
             hour_start = pd.Timestamp(row["hour_start"]) + timedelta(
-                hours= whole_days * 24 * iteration
+                hours=whole_days * 24 * iteration
             )
             hourly.append(
                 SeenByHour(
-                        hour_start=hour_start,
-                        seen=seen,
-                        seen_also_in_preceding_hour=seen_also_in_preceding_hour,
-                        box_id=box_id
+                    hour_start=hour_start,
+                    seen=seen,
+                    seen_also_in_preceding_hour=seen_also_in_preceding_hour,
+                    box_id=box_id,
                 )
             )
 
@@ -61,13 +63,14 @@ def generate_random_data(options: dict):
             daily.append(
                 SeenByDay(
                     box_id=box_id,
-                    day_start= pd.Timestamp(row['day_start']) + timedelta(hours= whole_days * 24 * iteration),
-                    seen=randomizeRow(row['seen']),
+                    day_start=pd.Timestamp(row["day_start"])
+                    + timedelta(hours=whole_days * 24 * iteration),
+                    seen=randomizeRow(row["seen"]),
                     seen_also_on_preceding_day=int(
-                        randomizeRow(row['seen_also_on_preceding_day'])
+                        randomizeRow(row["seen_also_on_preceding_day"])
                     ),
                     seen_also_a_week_earlier=int(
-                        randomizeRow(row['seen_also_a_week_earlier'])
+                        randomizeRow(row["seen_also_a_week_earlier"])
                     ),
                 )
             )
@@ -77,11 +80,10 @@ def generate_random_data(options: dict):
             aggregation.save()
 
 
-
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('--box_id', type=str)
-        parser.add_argument('--number_of_iterations', type=int, default=40)
+        parser.add_argument("--box_id", type=str)
+        parser.add_argument("--number_of_iterations", type=int, default=40)
 
     def handle(self, *args, **options):
         generate_random_data(options)

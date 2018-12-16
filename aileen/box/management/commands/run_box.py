@@ -65,8 +65,10 @@ def run_box(sudo_password: str):
         % settings.DATABASES["default"].get("NAME")
     )
 
-    command = f"echo {sudo_password} | sudo -S {settings.ACTIVATE_VENV_CMD} {sys.executable}" \
+    command = (
+        f"echo {sudo_password} | sudo -S {settings.ACTIVATE_VENV_CMD} {sys.executable}"
         f" manage.py runserver 0.0.0.0:80"
+    )
     run_command_in_tmux(
         tmux_session, command, restart_after_n_seconds=3, window_name="local_dashboard"
     )
@@ -95,7 +97,8 @@ def run_box(sudo_password: str):
     # now start to monitor tmux
     run_command_in_tmux(
         tmux_session,
-        "%s %s manage.py monitor_tmux --sudo-pwd %s" % (settings.ACTIVATE_VENV_CMD, sys.executable, sudo_password),
+        "%s %s manage.py monitor_tmux --sudo-pwd %s"
+        % (settings.ACTIVATE_VENV_CMD, sys.executable, sudo_password),
         restart_after_n_seconds=3,
         window_name="monitor_tmux",
     )

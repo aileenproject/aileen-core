@@ -17,15 +17,15 @@ urlpatterns = [
         ),
         name="favicon",
     ),
-    url(r"^", include("data.urls", namespace='data')),
+    url(r"^", include("data.urls", namespace="data")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.AILEEN_MODE in ("server", "both"):
-    urlpatterns.append(
-                    url(r"^", include("server.urls", namespace="server"))
-                    )
+    urlpatterns.append(url(r"^", include("server.urls", namespace="server")))
 elif settings.AILEEN_MODE == "box":
-    urlpatterns.extend((
-                    url(r"^", include("box.urls", namespace="box")),
-                    url(r"^", include("calibration.urls", namespace="calibration")),
-                        ))
+    urlpatterns.extend(
+        (
+            url(r"^", include("box.urls", namespace="box")),
+            url(r"^", include("calibration.urls", namespace="calibration")),
+        )
+    )
