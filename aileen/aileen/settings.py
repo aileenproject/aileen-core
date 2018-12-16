@@ -110,7 +110,7 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, "assets")
 
-LOGIN_REDIRECT_URL = "server:overview"
+LOGIN_REDIRECT_URL = "server:home"
 LOGOUT_REDIRECT_URL = "server:logout"
 
 # LEAFLET_CONFIG is needed to configure leaflet
@@ -156,12 +156,12 @@ logging.config.dictConfig(aileen_logging_config)
 #  ----- some can be customised by environment variables ----
 
 AILEEN_MODE = os.environ.get(
-    "AILEEN_MODE", default="both"
+    "AILEEN_MODE", default="box"
 )  # can also be "server" or "both" (for dev purposes)
 if AILEEN_MODE in ("box", "both"):
-    INSTALLED_APPS.append("box")
+    INSTALLED_APPS.extend(("box", "calibration"))
 if AILEEN_MODE in ("server", "both"):
-    INSTALLED_APPS.extend(("server", "calibration"))
+    INSTALLED_APPS.append("server")
 
 #  ---- General Settings
 
@@ -212,7 +212,7 @@ if PROCESS_RESTART_INTERVAL_IN_SECONDS % STATUS_MONITORING_INTERVAL_IN_SECONDS !
 
 # whether to hash mac addresses, defaults true
 HASH_MAC_ADDRESSES = (
-    os.environ.get("HASH_MAC_ADDRESSES", default="False") in TRUTH_STRINGS
+    os.environ.get("HASH_MAC_ADDRESSES", default="True") in TRUTH_STRINGS
 )
 HASH_ITERATIONS = int(
     os.environ.get("HASH_ITERATIONS", default=500_000)

@@ -81,7 +81,9 @@ class Command(BaseCommand):
             settings.PROCESS_RESTART_INTERVAL_IN_SECONDS
             / settings.STATUS_MONITORING_INTERVAL_IN_SECONDS
         )
-        logger.info("I will restart processes after %d status check(s)..." % restart_frequency)
+        logger.info(
+            "I will restart processes after %d status check(s)..." % restart_frequency
+        )
         monitoring_count = 0
 
         while True:

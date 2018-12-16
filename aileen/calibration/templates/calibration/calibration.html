@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load staticfiles %}
+
+{% load static %}
+
+
+<div class="jumbotron">
+  <select class="js-example-basic-single" id='selectedDevice'>
+    <option></option>
+      {% for device in all_unique_devices %}
+        <option value="{{ device.device_id }}"> {{ device.device_id }} </option>
+      {% endfor %}
+  </select>
+
+<!--
+it would be nice to include a better table, like shown below
+https://mdbootstrap.com/docs/jquery/tables/scroll/ --->
+
+  <div style="height: auto; max-height: 200px; overflow: auto;">
+    <table class="table" id="device_table">
+      <thread>
+        <tr>
+          <th scope="col">Device power</th>
+          <th scope="col">Time Seen</th>
+          <th scope="col">Access Point ID</th>
+          <th scope="col">Packets Captured</th>
+        </tr>
+      </thread>
+    </table>
+  </div>
+</div>
+
+
+<script src="{% static 'calibration/js/calibration-heatmapchart.js' %}"></script>
+<script src="{% static 'calibration/js/calibration-main.js' %}"></script>
+
+
+<div class="chart-container">
+      <div class="chart-tooltip"></div>
+      <div style="height: 80vh;" id="heatmapContainer"></div>
+</div>
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.js-example-basic-single').select2({
+      placeholder: 'select a device'
+    });
+});
+
+</script>
+
+
+<script type="text/javascript">
+  $("#selectedDevice").change(function(){
+    var selectedDevice = $(this)
+      .val()
+      .replace(/:/g, "-"); // replace : with - to make it easier to send
+
+    $.ajax({
+      url: "{% url 'calibration:selected_device' %}",
+      datatype: 'json',
+      type: 'GET',
+      data: {
+        'selected_device': selectedDevice
+      },
+      success: function(data){
+
+        $(function() {
+          var tbody = $("<tbody />"),tr;
+          $("td").remove()
+          $.each(data,function(_,obj) {
+              tr = $("<tr />");
+              $.each(obj,function(_,text) {
+                tr.append("<td>"+text+"</td>")
+              });
+              tr.appendTo(tbody);
+          });
+          tbody.appendTo("#device_table");
+        })
+        $('svg').remove();
+        $('.form-group').remove();
+      create_heat_map({
+        dataURL: `{% url "calibration:device_per_unit_time" %}?=${selectedDevice}`,
+      });
+      }
+    })
+  })
+</script>
+
+
+{% endblock %}

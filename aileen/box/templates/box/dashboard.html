@@ -5,42 +5,28 @@
 
 
 <nav class="navbar navbar-expand-md navbar-light bg-light">
-    <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <a class="navbar-brand" target="_blank"><img src="{% static "aileen/images/aileen_logo.png" %}" width="135" height="40" class="d-inline-block align-top" alt="img not found"></a>
-            </li>
-        </ul>
-    </div>
-    <div class="mx-auto ml-auto w-100 order-1 order-md-0 text-center">
-      <a class="nav-info"
-         data-toggle="tooltip"
-         title="{{ box_name }} has been running for {{ kpis.running_since | naturaltime }}"
-         >
-         {{box_name}}</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-  </nav>
+  <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="navbar-brand" target="_blank" href='https://www.aileenproject.org'><img src="{% static "aileen/images/aileen_logo.png" %}" width="135" height="40" class="d-inline-block align-top" alt="img not found"></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
 
 <!-- kpis -->
 {% include "data/_kpis.html" %}
 
-<div class="row">
-  <div class="chart-tooltip"></div>
-  <div class="col-md-6 col-lg-6 aileen-d3-container" id="heatmapContainer"></div>
-  <div class="col-md-6 col-lg-6 aileen-d3-container" id="radialBarContainer"></div>
-</div>
-<div class="h-divider"></div>
-</div>
+<!-- charts -->
+{% include "data/_charts.html" %}
 
 <script type="text/javascript">
-  const aileen_data = `{% url "box:devices" %}?={{ box_id }}`
+  const aileen_data = `{% url "data:devices" %}`;
 </script>
-<script src="{% static 'box/js/heatmapchart.js' %}"></script>
-<script src="{% static 'box/js/radialbarchart.js' %}"></script>
-<script src="{% static 'box/js/main.js' %}"></script>
+<script src="{% static 'data/js/heatmapchart.js' %}"></script>
+<script src="{% static 'data/js/radialbarchart.js' %}"></script>
+<script src="{% static 'box/js/d3-main.js' %}"></script>
 
 
 {% endblock %}

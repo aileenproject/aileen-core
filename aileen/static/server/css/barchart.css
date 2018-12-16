@@ -1,0 +1,47 @@
+.barChart {
+  position: relative;
+  font-family: 'TitilliumWeb-Regular', sans-serif !important;
+  font-size: 12px;
+}
+
+.barChart svg {
+  font-size: 10px;
+}
+
+.barChart .tooltip {
+  position: fixed;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 0.5em 0.75em;
+  border-radius: 0.5em;
+  pointer-events: none;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.barChart .barChartDateRangePicker {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.barChart .barChartDateRangePicker .label {
+  margin-bottom: 0.5em;
+}
+
+.barChart .barChartDateRangePicker .dateRangePickerInput {
+  background: #fff;
+  cursor: pointer;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  width: 228px;
+}
+
+.barChart .bar,
+.barChart .barExit {
+  fill: #1D5464;
+}
+
+.barChart .bar:hover {
+  fill-opacity: 0.8;
+}

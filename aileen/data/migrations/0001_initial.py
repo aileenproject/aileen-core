@@ -10,70 +10,110 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='DevicesEvents',
+            name="DevicesEvents",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('box_id', models.CharField(max_length=256)),
-                ('device_power', models.IntegerField()),
-                ('time_seen', models.DateTimeField()),
-                ('access_point_id', models.CharField(max_length=100)),
-                ('total_packets', models.IntegerField()),
-                ('packets_captured', models.IntegerField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("box_id", models.CharField(max_length=256)),
+                ("device_power", models.IntegerField()),
+                ("time_seen", models.DateTimeField()),
+                ("access_point_id", models.CharField(max_length=100)),
+                ("total_packets", models.IntegerField()),
+                ("packets_captured", models.IntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='SeenByDay',
+            name="SeenByDay",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('box_id', models.CharField(max_length=256, unique_for_date='day')),
-                ('day_start', models.DateTimeField()),
-                ('seen', models.IntegerField()),
-                ('seen_also_on_preceding_day', models.IntegerField()),
-                ('seen_also_a_week_earlier', models.IntegerField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("box_id", models.CharField(max_length=256, unique_for_date="day")),
+                ("day_start", models.DateTimeField()),
+                ("seen", models.IntegerField()),
+                ("seen_also_on_preceding_day", models.IntegerField()),
+                ("seen_also_a_week_earlier", models.IntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='SeenByHour',
+            name="SeenByHour",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('box_id', models.CharField(max_length=256)),
-                ('hour_start', models.DateTimeField()),
-                ('seen', models.IntegerField()),
-                ('seen_also_in_preceding_hour', models.IntegerField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("box_id", models.CharField(max_length=256)),
+                ("hour_start", models.DateTimeField()),
+                ("seen", models.IntegerField()),
+                ("seen_also_in_preceding_hour", models.IntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='TmuxStatus',
+            name="TmuxStatus",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('box_id', models.CharField(max_length=256)),
-                ('airodump_ng', models.BooleanField()),
-                ('time_stamp', models.DateTimeField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("box_id", models.CharField(max_length=256)),
+                ("airodump_ng", models.BooleanField()),
+                ("time_stamp", models.DateTimeField()),
             ],
         ),
         migrations.CreateModel(
-            name='UniqueDevices',
+            name="UniqueDevices",
             fields=[
-                ('device_id', models.CharField(db_index=True, max_length=100, primary_key=True, serialize=False, unique=True)),
-                ('time_last_seen', models.DateTimeField()),
+                (
+                    "device_id",
+                    models.CharField(
+                        db_index=True,
+                        max_length=100,
+                        primary_key=True,
+                        serialize=False,
+                        unique=True,
+                    ),
+                ),
+                ("time_last_seen", models.DateTimeField()),
             ],
         ),
         migrations.AlterUniqueTogether(
-            name='seenbyhour',
-            unique_together=set([('box_id', 'hour_start')]),
+            name="seenbyhour", unique_together=set([("box_id", "hour_start")])
         ),
         migrations.AddField(
-            model_name='devicesevents',
-            name='device',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='data.UniqueDevices'),
+            model_name="devicesevents",
+            name="device",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="data.UniqueDevices"
+            ),
         ),
         migrations.AlterUniqueTogether(
-            name='devicesevents',
-            unique_together=set([('device', 'time_seen')]),
+            name="devicesevents", unique_together=set([("device", "time_seen")])
         ),
     ]

@@ -107,7 +107,9 @@ def csv_file_to_db(tmp_path: str, csv_filename_prefix: str):
 
         airodump_df = read_airodump_csv_and_return_df(tmp_path, csv_filename_prefix)
         update_database_with_new_and_updated_devices(airodump_df)
-        sleep_until_interval_is_complete(start_time, settings.AIRODUMP_LOG_INTERVAL_IN_SECONDS)
+        sleep_until_interval_is_complete(
+            start_time, settings.AIRODUMP_LOG_INTERVAL_IN_SECONDS
+        )
 
         print()
 

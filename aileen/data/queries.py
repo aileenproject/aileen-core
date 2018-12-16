@@ -250,4 +250,6 @@ def data_for_device_per_unit_time(device_id):
     )
     id_power_packets["time"] = id_power_packets["time"].map(lambda x: x.timestamp())
 
-    return id_power_packets.to_dict("records")
+    data = id_power_packets.to_dict("records")
+    print(data)
+    return data
