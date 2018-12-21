@@ -2,9 +2,6 @@ import libtmux
 import pytz
 import logging
 import time
-from datetime import datetime
-import os
-
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from box.models import BoxSettings
@@ -12,6 +9,8 @@ from box.airo_tasks import run_airodump_in_tmux
 from box.utils.dir_handling import build_tmp_dir_name
 from data.models import TmuxStatus
 from data.time_utils import sleep_until_interval_is_complete
+from datetime import datetime
+import os
 
 """
 This command is concerned with the health of tmux sessions. State is monitored and periodic restarts are done.
