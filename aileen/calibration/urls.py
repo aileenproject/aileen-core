@@ -1,5 +1,6 @@
-from calibration import api, views
 from django.conf.urls import url
+
+from calibration import api, views
 
 app_name = "calibration"
 

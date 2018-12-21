@@ -1,5 +1,6 @@
-from data import api
 from django.conf.urls import url
+
+from data import api
 
 app_name = "data"
 

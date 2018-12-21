@@ -1,6 +1,7 @@
+from django.http import JsonResponse
+
 from data.models import SeenByHour
 from data.queries import prepare_df_datetime_index
-from django.http import JsonResponse
 
 
 def devices_by_box_id(request, box_id):

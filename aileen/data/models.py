@@ -1,8 +1,8 @@
 from datetime import datetime
 
 import pandas as pd
-
 from django.db import models
+
 from django_pandas.managers import DataFrameManager
 
 """ Data models shared between boxes and servers. This is the core data we are collecting."""

@@ -4,15 +4,14 @@ from datetime import datetime, timedelta
 from typing import List
 
 import pandas as pd
+from django.conf import settings
+from django.core.management.base import BaseCommand
+from django.db import transaction
 
 from box.models import BoxSettings
 from data.models import SeenByDay, SeenByHour, TmuxStatus
 from data.queries import get_unique_device_ids_seen
-from data.time_utils import (as_day, as_hour, get_most_recent_hour,
-                             sleep_until_interval_is_complete)
-from django.conf import settings
-from django.core.management.base import BaseCommand
-from django.db import transaction
+from data.time_utils import as_day, as_hour, get_most_recent_hour, sleep_until_interval_is_complete
 
 logger = logging.getLogger(__name__)
 

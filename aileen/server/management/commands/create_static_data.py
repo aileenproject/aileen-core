@@ -7,11 +7,11 @@ from typing import Optional
 
 import iso8601
 import pandas as pd
+from django.core.management.base import BaseCommand
+from django.db import transaction
 
 from data.models import SeenByDay, SeenByHour
 from data.time_utils import get_most_recent_hour, get_timezone
-from django.core.management.base import BaseCommand
-from django.db import transaction
 from server.models import AileenBox
 
 logger = logging.getLogger(__name__)

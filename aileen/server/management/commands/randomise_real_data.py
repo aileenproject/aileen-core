@@ -4,11 +4,11 @@ from math import floor
 
 import numpy as np
 import pandas as pd
-
-from data.models import SeenByDay, SeenByHour
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
+
+from data.models import SeenByDay, SeenByHour
 
 data_dir = os.path.join(settings.BASE_DIR, "data/dummy_data/")
 

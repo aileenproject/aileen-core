@@ -1,5 +1,6 @@
-from box import views
 from django.conf.urls import url
+
+from box import views
 
 app_name = "box"
 

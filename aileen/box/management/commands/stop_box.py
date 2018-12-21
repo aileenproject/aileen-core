@@ -1,8 +1,9 @@
 import logging
 
-from box.utils.tmux_handling import kill_tmux_session
 from django.conf import settings
 from django.core.management.base import BaseCommand
+
+from box.utils.tmux_handling import kill_tmux_session
 
 logger = logging.getLogger(__name__)
 

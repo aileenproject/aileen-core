@@ -4,9 +4,9 @@ from datetime import datetime
 import pandas as pd
 import pandas.errors as pandas_errors
 import pytz
+from django.conf import settings
 
 from box.utils.privacy_utils import hash_mac_address
-from django.conf import settings
 
 
 def find_csv(csv_filename_prefix: str, target_dir: str = None) -> str:
