@@ -7,9 +7,11 @@ Aileen, a hardware/software suite designed for NGOs, counts signals from devices
 
 ## Dependencies
 * Make a virtual environment: `virtualenv env_aileen`
-* Activate it, e.g: `source env/bin/activate`
+* Activate it, e.g: `source env_aileen/bin/activate`
 * Install the `aileen` dependencies:
-  `pip install -r requirements.txt`
+  `python setup.py develop`
+* If you want to collaborate on code, please install pre-commit for it to hook into commits:
+  `pre-commit install` 
 
 ## Database for development
 Use sqlite

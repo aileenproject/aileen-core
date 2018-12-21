@@ -1,14 +1,15 @@
-import libtmux
-import pytz
 import logging
+import os
 import time
 from datetime import datetime
-import os
 
-from django.core.management.base import BaseCommand
+import pytz
 from django.conf import settings
-from box.models import BoxSettings
+from django.core.management.base import BaseCommand
+
+import libtmux
 from box.airo_tasks import run_airodump_in_tmux
+from box.models import BoxSettings
 from box.utils.dir_handling import build_tmp_dir_name
 from data.models import TmuxStatus
 from data.time_utils import sleep_until_interval_is_complete

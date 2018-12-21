@@ -1,10 +1,9 @@
-from datetime import datetime
-import time
 import logging
+import time
+from datetime import datetime
 
 import pytz
 from django.conf import settings
-
 
 logger = logging.getLogger(__name__)
 

@@ -1,0 +1,16 @@
+repos:
+-   repo: https://github.com/ambv/black
+    rev: stable
+    hooks:
+    - id: black
+      language_version: python3.6
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v1.3.0
+    hooks:
+    - id: flake8
+      args: [aileen]
+- repo: git://github.com/FalconSocial/pre-commit-python-sorter
+  sha: 1.0.4
+  hooks:
+  - id: python-import-sorter
+    args: ['--silent-overwrite']

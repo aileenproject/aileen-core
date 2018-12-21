@@ -1,10 +1,9 @@
-from django.conf.urls import url, include
-from django.contrib import admin
 from django.conf import settings
-
-from django.views.generic.base import RedirectView
-from django.contrib.staticfiles.storage import staticfiles_storage
+from django.conf.urls import include, url
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     url(r"^admin/", admin.site.urls),

@@ -1,7 +1,6 @@
+import logging.config
 import os
 import sys
-import logging.config
-
 
 TRUTH_STRINGS = ["True", "true", "1", "t", "y", "yes"]
 
