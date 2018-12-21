@@ -1,6 +1,6 @@
-from typing import Callable
 import logging
 from subprocess import call
+from typing import Callable
 
 import libtmux
 

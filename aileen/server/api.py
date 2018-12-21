@@ -1,20 +1,14 @@
 import logging
 
-from django.http import (
-    HttpResponse,
-    HttpResponseForbidden,
-    HttpResponseBadRequest,
-    HttpResponseNotFound,
-    JsonResponse,
-)
-from django.views.decorators.csrf import csrf_exempt
+from data.models import SeenByDay, SeenByHour, UniqueDevices
+from data.queries import prepare_df_datetime_index
 from django.core.serializers import deserialize
 from django.db import transaction
-
-from data.models import UniqueDevices, SeenByHour, SeenByDay
+from django.http import (HttpResponse, HttpResponseBadRequest,
+                         HttpResponseForbidden, HttpResponseNotFound,
+                         JsonResponse)
+from django.views.decorators.csrf import csrf_exempt
 from server.models import AileenBox
-from data.queries import prepare_df_datetime_index
-
 
 logger = logging.getLogger(__name__)
 

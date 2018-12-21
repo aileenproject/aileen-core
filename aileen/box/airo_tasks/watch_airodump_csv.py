@@ -1,9 +1,9 @@
 import os
 from datetime import datetime
 
-import pytz
 import pandas as pd
 import pandas.errors as pandas_errors
+import pytz
 
 from box.utils.privacy_utils import hash_mac_address
 from django.conf import settings

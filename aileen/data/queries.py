@@ -1,11 +1,11 @@
 import logging
-from typing import Dict, List
 from datetime import datetime
+from typing import Dict, List
 
 import pandas as pd
 
+from data.models import DevicesEvents, SeenByDay, SeenByHour
 from django.conf import settings
-from data.models import DevicesEvents, SeenByHour, SeenByDay
 
 """
 TODO: these are not all "queries". Two of these are very special (pandas-related) utility functions.

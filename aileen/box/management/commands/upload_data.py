@@ -1,21 +1,17 @@
 import logging
 import time
 
+import pytz
+import requests
+
+from box.models import BoxSettings
+from data.models import (DevicesEvents, SeenByDay, SeenByHour, TmuxStatus,
+                         UniqueDevices)
+from data.time_utils import (as_day, get_most_recent_hour, get_timezone,
+                             sleep_until_interval_is_complete)
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.serializers import serialize
-import pytz
-
-import requests
-from django.conf import settings
-from box.models import BoxSettings
-from data.models import DevicesEvents, UniqueDevices, SeenByDay, SeenByHour, TmuxStatus
-from data.time_utils import (
-    get_most_recent_hour,
-    sleep_until_interval_is_complete,
-    as_day,
-    get_timezone,
-)
-
 
 logger = logging.getLogger(__name__)
 

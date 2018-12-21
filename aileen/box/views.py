@@ -1,8 +1,7 @@
-from django.shortcuts import render
-
-from data.queries import compute_kpis
-from data.models import TmuxStatus
 from box.models import BoxSettings
+from data.models import TmuxStatus
+from data.queries import compute_kpis
+from django.shortcuts import render
 
 
 def dashboard(request):

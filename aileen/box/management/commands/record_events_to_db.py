@@ -5,16 +5,15 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import pytz
+
+from box.airo_tasks.watch_airodump_csv import read_airodump_csv_and_return_df
+from box.models import BoxSettings
+from box.utils.dir_handling import build_tmp_dir_name
+from data.models import DevicesEvents, UniqueDevices
+from data.time_utils import sleep_until_interval_is_complete
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.conf import settings
-
-from data.models import DevicesEvents, UniqueDevices
-from box.models import BoxSettings
-from box.airo_tasks.watch_airodump_csv import read_airodump_csv_and_return_df
-from box.utils.dir_handling import build_tmp_dir_name
-from data.time_utils import sleep_until_interval_is_complete
-
 
 logger = logging.getLogger(__name__)
 

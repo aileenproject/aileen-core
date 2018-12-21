@@ -1,15 +1,14 @@
-from math import floor
-from datetime import datetime, timedelta
 import os
+from datetime import datetime, timedelta
+from math import floor
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-from django.db import transaction
-from django.core.management.base import BaseCommand
+from data.models import SeenByDay, SeenByHour
 from django.conf import settings
-from data.models import SeenByHour, SeenByDay
-
+from django.core.management.base import BaseCommand
+from django.db import transaction
 
 data_dir = os.path.join(settings.BASE_DIR, "data/dummy_data/")
 

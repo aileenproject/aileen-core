@@ -1,17 +1,15 @@
+import logging
 import sys
 import time
-import logging
 from getpass import getpass
 
-from django.core.management.base import BaseCommand
-from django.conf import settings
-
-from box.utils.tmux_handling import start_tmux_session, run_command_in_tmux
-from box.utils.dir_handling import clean_tmp_files
 from box.airo_tasks import run_airodump_in_tmux
 from box.airo_tasks.start_airodump import find_interface
 from box.models import BoxSettings
-
+from box.utils.dir_handling import clean_tmp_files
+from box.utils.tmux_handling import run_command_in_tmux, start_tmux_session
+from django.conf import settings
+from django.core.management.base import BaseCommand
 
 logger = logging.getLogger(__name__)
 

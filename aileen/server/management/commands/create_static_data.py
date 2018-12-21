@@ -1,19 +1,18 @@
-from typing import Optional
-import sys
 import logging
-from datetime import datetime, timedelta
-import uuid
 import random
+import sys
+import uuid
+from datetime import datetime, timedelta
+from typing import Optional
 
 import iso8601
 import pandas as pd
-from django.db import transaction
-from django.core.management.base import BaseCommand
 
-from data.time_utils import get_most_recent_hour, get_timezone
 from data.models import SeenByDay, SeenByHour
+from data.time_utils import get_most_recent_hour, get_timezone
+from django.core.management.base import BaseCommand
+from django.db import transaction
 from server.models import AileenBox
-
 
 logger = logging.getLogger(__name__)
 

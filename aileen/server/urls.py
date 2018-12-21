@@ -1,10 +1,8 @@
-from djgeojson.views import GeoJSONLayerView
-from django.conf.urls import url, include
+from django.conf.urls import include, url
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
-
-from server import models, api, views
-
+from djgeojson.views import GeoJSONLayerView
+from server import api, models, views
 
 app_name = "server"
 

@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from typing import List
 from getpass import getuser
+from typing import List
+
+import click
 import pexpect
 
 from netifaces import interfaces as net_interfaces
-import click
 
 
 def run_with_sudo(
