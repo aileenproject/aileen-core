@@ -102,7 +102,7 @@ function radialBarChart(options) {
   ////////////////////////////////////////////////////////////
 
   controlContainer.html(`
-    <div class="w-100 d-flex justify-content-center">
+    <div class="w-100 m-0 d-flex justify-content-center">
 
       <div class="form-group pr-3">
         <label>Selected Date Range</label>

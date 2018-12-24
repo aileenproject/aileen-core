@@ -14,6 +14,10 @@ Aileen, a hardware/software suite designed for NGOs, counts signals from devices
 ## Database for development
 Use sqlite
 
+## code
+We use black
+We use isort for package importing
+
 ## .env file
 To run the aileen box you'll need to have the following in an `aileen/.env` file.
 ```
