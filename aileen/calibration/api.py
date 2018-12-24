@@ -1,11 +1,8 @@
 from django.http import JsonResponse
 
 from data.models import UniqueDevices
-<<<<<<< HEAD
+
 from data.queries import data_for_device_per_unit_time, data_from_selected_device
-=======
-from data.queries import data_from_selected_device, data_for_device_per_unit_time
->>>>>>> merging_with_nic
 
 
 def device_per_unit_time(request, *args, **kwargs):

@@ -24,7 +24,6 @@ def devices_by_box_id(request, box_id):
     )
 
     data = seen_by_hour_df.to_dict("records")
-    print(data)
     return JsonResponse(data, safe=False)
 
 
@@ -42,5 +41,4 @@ def devices(request):
     )
 
     data = seen_by_hour_df.to_dict("records")
-    print(data)
     return JsonResponse(data, safe=False)

@@ -5,14 +5,14 @@ function radialBarChart(options) {
   const maxDate = options.maxDate;
   let potentialInitDateRangeStart = moment
     .utc(options.initDateRangeStart, "YYYY-MM-DD")
-    .isValid()
-    ? moment.utc(options.initDateRangeStart, "YYYY-MM-DD")
-    : data[0].time.clone();
+    .isValid() ?
+    moment.utc(options.initDateRangeStart, "YYYY-MM-DD") :
+    data[0].time.clone();
   let potentialInitDateRangeEnd = moment
     .utc(options.initDateRangeEnd, "YYYY-MM-DD")
-    .isValid()
-    ? moment.utc(options.initDateRangeEnd, "YYYY-MM-DD")
-    : date[data.length - 1].time.clone();
+    .isValid() ?
+    moment.utc(options.initDateRangeEnd, "YYYY-MM-DD") :
+    date[data.length - 1].time.clone();
   let initDateRangeStart, initDateRangeEnd;
   // Make sure the start date isn't before the first date in data
   if (potentialInitDateRangeStart.isBefore(data[0].time)) {
@@ -55,7 +55,12 @@ function radialBarChart(options) {
   // Dimension
   const controlHeight = 60;
   const legendHeight = 24;
-  const margin = { top: 15, right: 5, bottom: legendHeight + 5, left: 5 };
+  const margin = {
+    top: 15,
+    right: 5,
+    bottom: legendHeight + 5,
+    left: 5
+  };
   const width = containerWidth - margin.left - margin.right;
   const height = containerHeight - controlHeight - margin.top - margin.bottom;
 
@@ -102,12 +107,7 @@ function radialBarChart(options) {
   ////////////////////////////////////////////////////////////
 
   controlContainer.html(`
-<<<<<<< HEAD
-    <div class="w-100 d-flex justify-content-center">
-=======
     <div class="w-100 m-0 d-flex justify-content-center">
->>>>>>> merging_with_nic
-
       <div class="form-group pr-3">
         <label>Selected Date Range</label>
         <div class="input-group">
@@ -158,8 +158,8 @@ function radialBarChart(options) {
           .endOf("day");
         dateRangeFilteredData = data.filter(
           d =>
-            d.time.isSameOrAfter(selectedAverageStartDate) &&
-            d.time.isSameOrBefore(selectedAverageEndDate)
+          d.time.isSameOrAfter(selectedAverageStartDate) &&
+          d.time.isSameOrBefore(selectedAverageEndDate)
         );
         updateRadialBar("average");
       }
@@ -180,7 +180,7 @@ function radialBarChart(options) {
     Weekend: [6, 0]
   };
 
-  $("#radialBarDayFilterDropdown").on("change", function(event) {
+  $("#radialBarDayFilterDropdown").on("change", function (event) {
     selectedDayFilter = event.target.value;
     updateRadialBar("average");
     updateLegendAverageText();
@@ -226,22 +226,22 @@ function radialBarChart(options) {
     .attr(
       "x",
       d =>
-        axisLabelRadius *
-        Math.cos(
-          angleScale(d) -
-            Math.PI / 2 -
-            (angleScale.step() * angleScalePadding) / 2
-        )
+      axisLabelRadius *
+      Math.cos(
+        angleScale(d) -
+        Math.PI / 2 -
+        (angleScale.step() * angleScalePadding) / 2
+      )
     )
     .attr(
       "y",
       d =>
-        axisLabelRadius *
-        Math.sin(
-          angleScale(d) -
-            Math.PI / 2 -
-            (angleScale.step() * angleScalePadding) / 2
-        )
+      axisLabelRadius *
+      Math.sin(
+        angleScale(d) -
+        Math.PI / 2 -
+        (angleScale.step() * angleScalePadding) / 2
+      )
     )
     .attr("text-anchor", "middle")
     .text(d => (+d === 0 ? "0:00h" : +d % 2 === 0 ? d : ""));
@@ -279,7 +279,7 @@ function radialBarChart(options) {
     .enter()
     .append("path")
     .attr("class", "invisible-wedge")
-    .attr("d", function(d) {
+    .attr("d", function (d) {
       return d3
         .arc()
         .innerRadius(innerRadius)
@@ -377,9 +377,9 @@ function radialBarChart(options) {
         Math.max(
           d3.max(
             g
-              .select(`.average-wedges`)
-              .selectAll(".wedge")
-              .data(),
+            .select(`.average-wedges`)
+            .selectAll(".wedge")
+            .data(),
             d => d.devices
           )
         )
@@ -469,7 +469,7 @@ function radialBarChart(options) {
           .attr("class", "wedge")
           .attr("fill", colorScale(seriesToUpdate))
           .attr("fill-opacity", wedgeFillOpacity)
-          .attr("d", function(d) {
+          .attr("d", function (d) {
             const angleOffset = angleScale.bandwidth() / series.length;
             const startAngle =
               angleScale(d.hour.toString()) +
@@ -479,27 +479,27 @@ function radialBarChart(options) {
             const arc = arcs.set(
               this,
               d3
-                .arc()
-                .innerRadius(innerRadius)
-                .outerRadius(outerRadius)
-                .startAngle(startAngle)
-                .endAngle(endAngle)
+              .arc()
+              .innerRadius(innerRadius)
+              .outerRadius(outerRadius)
+              .startAngle(startAngle)
+              .endAngle(endAngle)
             );
             return arc();
           })
           .merge(wedge)
           .attr("stroke", d =>
-            d.devices === dayMaxDevices && currentSeries === "day"
-              ? maxWedgeStrokeColor
-              : "none"
+            d.devices === dayMaxDevices && currentSeries === "day" ?
+            maxWedgeStrokeColor :
+            "none"
           )
           .transition()
           .duration(500)
-          .attrTween("d", function(d) {
+          .attrTween("d", function (d) {
             const newOuterRadius = radiusScale(d.devices);
             return arcTween.call(this, newOuterRadius);
           })
-          .on("end", function(d) {
+          .on("end", function (d) {
             outerRadiuses.set(this, radiusScale(d.devices));
           });
 
@@ -507,7 +507,7 @@ function radialBarChart(options) {
           .exit()
           .transition()
           .duration(500)
-          .attrTween("d", function(d) {
+          .attrTween("d", function (d) {
             return arcTween.call(this, innerRadius);
           })
           .remove();
@@ -515,17 +515,17 @@ function radialBarChart(options) {
         g.select(`.${currentSeries}-wedges`)
           .selectAll(".wedge")
           .attr("stroke", d =>
-            d.devices === dayMaxDevices && currentSeries === "day"
-              ? maxWedgeStrokeColor
-              : "none"
+            d.devices === dayMaxDevices && currentSeries === "day" ?
+            maxWedgeStrokeColor :
+            "none"
           )
           .transition()
           .duration(500)
-          .attrTween("d", function(d) {
+          .attrTween("d", function (d) {
             const newOuterRadius = radiusScale(d.devices);
             return arcTween.call(this, newOuterRadius);
           })
-          .on("end", function(d) {
+          .on("end", function (d) {
             outerRadiuses.set(this, radiusScale(d.devices));
           });
       }
@@ -536,7 +536,7 @@ function radialBarChart(options) {
     const arc = arcs.get(this);
     const oldOuterRadius = outerRadiuses.get(this);
     const i = d3.interpolateNumber(oldOuterRadius, newOuterRadius);
-    return function(t) {
+    return function (t) {
       const r = i(t);
       return arc.outerRadius(r)();
     };
@@ -563,7 +563,7 @@ function radialBarChart(options) {
     .attr(
       "transform",
       (d, i) =>
-        `translate(${margin.left +
+      `translate(${margin.left +
           width / 2 -
           i * legendItemWidth}, ${legendRowHeight})`
     );
@@ -641,11 +641,11 @@ function radialBarChart(options) {
         series
       )}"></div>`;
       const count =
-        series === "average"
-          ? hourData.devices === 0
-            ? 0
-            : d3.format(".1f")(hourData.devices)
-          : hourData.devices;
+        series === "average" ?
+        hourData.devices === 0 ?
+        0 :
+        d3.format(".1f")(hourData.devices) :
+        hourData.devices;
       html += `<div>${circle} ${count}</div>`;
     });
     tooltip.html(html);
@@ -710,22 +710,22 @@ function radialBarChart(options) {
       .attr(
         "x",
         d =>
-          axisLabelRadius *
-          Math.cos(
-            angleScale(d) -
-              Math.PI / 2 -
-              (angleScale.step() * angleScalePadding) / 2
-          )
+        axisLabelRadius *
+        Math.cos(
+          angleScale(d) -
+          Math.PI / 2 -
+          (angleScale.step() * angleScalePadding) / 2
+        )
       )
       .attr(
         "y",
         d =>
-          axisLabelRadius *
-          Math.sin(
-            angleScale(d) -
-              Math.PI / 2 -
-              (angleScale.step() * angleScalePadding) / 2
-          )
+        axisLabelRadius *
+        Math.sin(
+          angleScale(d) -
+          Math.PI / 2 -
+          (angleScale.step() * angleScalePadding) / 2
+        )
       );
 
     gAxis
@@ -751,7 +751,7 @@ function radialBarChart(options) {
       .attr("transform", d => `translate(0, ${-radiusScale(d)})`);
 
     // Chart
-    gInvisibleWedges.selectAll(".invisible-wedge").attr("d", function(d) {
+    gInvisibleWedges.selectAll(".invisible-wedge").attr("d", function (d) {
       return d3
         .arc()
         .innerRadius(innerRadius)
@@ -763,7 +763,7 @@ function radialBarChart(options) {
     series.forEach(seriesToUpdate => {
       g.select(`.${seriesToUpdate}-wedges`)
         .selectAll(".wedge")
-        .attr("d", function(d) {
+        .attr("d", function (d) {
           const angleOffset = angleScale.bandwidth() / series.length;
           const startAngle =
             angleScale(d.hour.toString()) +
@@ -773,11 +773,11 @@ function radialBarChart(options) {
           const arc = arcs.set(
             this,
             d3
-              .arc()
-              .innerRadius(innerRadius)
-              .outerRadius(outerRadius)
-              .startAngle(startAngle)
-              .endAngle(endAngle)
+            .arc()
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius)
+            .startAngle(startAngle)
+            .endAngle(endAngle)
           );
           outerRadiuses.set(this, radiusScale(d.devices));
           return arc();
@@ -788,7 +788,7 @@ function radialBarChart(options) {
     legendRow.attr(
       "transform",
       (d, i) =>
-        `translate(${margin.left +
+      `translate(${margin.left +
           width / 2 -
           i * legendItemWidth}, ${legendRowHeight})`
     );
@@ -800,7 +800,7 @@ function radialBarChart(options) {
   ////////////////////////////////////////////////////////////
   //// Exported Chart Methods ////////////////////////////////
   ////////////////////////////////////////////////////////////
-  chart.updateDayBars = function(date, maxDevices) {
+  chart.updateDayBars = function (date, maxDevices) {
     selectedDayDate = date ? date : undefined;
     dayMaxDevices = maxDevices;
     updateRadialBar("day");
