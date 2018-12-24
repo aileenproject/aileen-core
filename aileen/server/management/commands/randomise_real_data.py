@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import os
 from datetime import datetime, timedelta
 from math import floor
@@ -9,6 +10,20 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from data.models import SeenByDay, SeenByHour
+=======
+from math import floor
+from datetime import datetime, timedelta
+import os
+
+import pandas as pd
+import numpy as np
+
+from django.db import transaction
+from django.core.management.base import BaseCommand
+from django.conf import settings
+from data.models import SeenByHour, SeenByDay
+
+>>>>>>> merging_with_nic
 
 data_dir = os.path.join(settings.BASE_DIR, "data/dummy_data/")
 

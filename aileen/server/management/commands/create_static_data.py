@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import logging
 import random
 import sys
@@ -14,6 +15,25 @@ from data.models import SeenByDay, SeenByHour
 from data.time_utils import get_most_recent_hour, get_timezone
 from server.models import AileenBox
 
+=======
+from typing import Optional
+import sys
+import logging
+from datetime import datetime, timedelta
+import uuid
+import random
+
+import iso8601
+import pandas as pd
+from django.db import transaction
+from django.core.management.base import BaseCommand
+
+from data.time_utils import get_most_recent_hour, get_timezone
+from data.models import SeenByDay, SeenByHour
+from server.models import AileenBox
+
+
+>>>>>>> merging_with_nic
 logger = logging.getLogger(__name__)
 
 

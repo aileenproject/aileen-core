@@ -1,5 +1,6 @@
 import logging
 
+<<<<<<< HEAD
 from django.core.serializers import deserialize
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, JsonResponse
@@ -8,6 +9,23 @@ from django.views.decorators.csrf import csrf_exempt
 from data.models import SeenByDay, SeenByHour, UniqueDevices
 from data.queries import prepare_df_datetime_index
 from server.models import AileenBox
+=======
+from django.http import (
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseBadRequest,
+    HttpResponseNotFound,
+    JsonResponse,
+)
+from django.views.decorators.csrf import csrf_exempt
+from django.core.serializers import deserialize
+from django.db import transaction
+
+from data.models import UniqueDevices, SeenByHour, SeenByDay
+from server.models import AileenBox
+from data.queries import prepare_df_datetime_index
+
+>>>>>>> merging_with_nic
 
 logger = logging.getLogger(__name__)
 

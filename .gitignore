@@ -13,3 +13,7 @@ aileen/db.sqlite3
 aileen/server/__pycache__/
 env_aileen/
 /aileen/server/migrations/__pycache__/
+<<<<<<< HEAD
+=======
+.vscode
+>>>>>>> merging_with_nic

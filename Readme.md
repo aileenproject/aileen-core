@@ -7,7 +7,11 @@ Aileen, a hardware/software suite designed for NGOs, counts signals from devices
 
 ## Dependencies
 * Make a virtual environment: `virtualenv env_aileen`
+<<<<<<< HEAD
 * Activate it, e.g: `source env_aileen/bin/activate`
+=======
+* Activate it, e.g: `source env/bin/activate`
+>>>>>>> merging_with_nic
 * Install the `aileen` dependencies:
   `python setup.py develop`
 * If you want to collaborate on code, please install pre-commit for it to hook into commits:
@@ -16,6 +20,13 @@ Aileen, a hardware/software suite designed for NGOs, counts signals from devices
 ## Database for development
 Use sqlite
 
+<<<<<<< HEAD
+=======
+## code
+We use black
+We use isort for package importing
+
+>>>>>>> merging_with_nic
 ## .env file
 To run the aileen box you'll need to have the following in an `aileen/.env` file.
 ```
@@ -29,8 +40,13 @@ Initialize the database
 
   * `python manage.py makemigrations`
   * `python manage.py migrate`
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> merging_with_nic
 Create a super user
   * `python manage.py createsuperuser`
 

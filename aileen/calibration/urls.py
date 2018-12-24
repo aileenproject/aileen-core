@@ -1,6 +1,10 @@
 from django.conf.urls import url
 
+<<<<<<< HEAD
 from calibration import api, views
+=======
+from calibration import views, api
+>>>>>>> merging_with_nic
 
 app_name = "calibration"
 

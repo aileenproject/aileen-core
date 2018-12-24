@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, render
@@ -6,6 +7,16 @@ from django.views.generic import TemplateView
 from data.models import TmuxStatus, UniqueDevices
 from data.queries import compute_kpis
 from server.models import AileenBox
+=======
+from django.shortcuts import render, redirect
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+
+from server.models import AileenBox
+from data.models import UniqueDevices, TmuxStatus
+from data.queries import compute_kpis
+>>>>>>> merging_with_nic
 
 
 class Landing(TemplateView):
