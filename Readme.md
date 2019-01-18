@@ -22,8 +22,8 @@ Use sqlite
 
 ## code
 
-We use black
-We use isort for package importing
+- We use black for code formatting.
+- We use isort for package importing.
 
 ## .env file
 
@@ -31,9 +31,11 @@ To run the aileen box you'll need to have the following in an `aileen/.env` file
 
 ```
 WIFI_INTERFACES='theWifiInterfaceOfDevice'
-SUDO_PWD='password'
 DISABLE_AUTO_TITLE='true'
 ```
+
+Aileen will tell you about the wifi interfaces it sees if you don't know what to put for the first setting.
+
 
 ## First migrations and superuser
 
@@ -53,11 +55,11 @@ Check if everything was installed correctly with either:
 - `python manage.py runserver`
 - `python manage.py run_box`
 
-## Data to Map
+## Data to map on server
 
 Go to the `/admin` url and add a location for the aileen box
 
-## Deploy app
+## Deploy server app
 
 When creating an app on a server be sure to tell the server to collect the static files with the following
 `python manage.py collectstatic`
