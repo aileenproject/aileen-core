@@ -22,7 +22,7 @@ function heatmapChart(options) {
   let xAxisMinDate;
   let xAxisMaxDate;
   let maxDevices;
-  
+
   const allDates = enumerateDaysBetweenDates(
     data[0].date.clone(),
     data[data.length - 1].date.clone()
@@ -32,10 +32,20 @@ function heatmapChart(options) {
   const leftAlign = allDates.length <= heatmapWidthDays;
 
   // Dimension
-  const margin = { top: 5, right: 5, bottom: 5, left: 5 };
+  const margin = {
+    top: 5,
+    right: 5,
+    bottom: 5,
+    left: 5
+  };
   const width = containerWidth - margin.left - margin.right;
   const height = containerHeight - margin.top - margin.bottom;
-  const padding = { top: 25, right: 40, bottom: 50, left: 40 };
+  const padding = {
+    top: 25,
+    right: 40,
+    bottom: 50,
+    left: 40
+  };
   let cellSize = Math.min(
     (width - padding.left - padding.right) / heatmapWidthDays,
     (height - padding.top - padding.bottom) / 24
@@ -51,7 +61,7 @@ function heatmapChart(options) {
   const colorInterpolator = d3.interpolateHcl;
   const max_times_seen = Math.max.apply(
     Math,
-    data.map(function(o) {
+    data.map(function (o) {
       return o.devices;
     })
   );
@@ -72,7 +82,10 @@ function heatmapChart(options) {
 
   const zoom = d3
     .zoom()
-    .extent([[0, 0], [heatmapWidth, heatmapHeight]])
+    .extent([
+      [0, 0],
+      [heatmapWidth, heatmapHeight]
+    ])
     .scaleExtent([1, 1])
     .translateExtent([
       [heatmapWidth - cellSize * allDates.length, 0],
@@ -370,7 +383,10 @@ function heatmapChart(options) {
         if (!freezedDay) {
           window.dispatchEvent(
             new CustomEvent("heatmap-date-change", {
-              detail: { heatmapDate: d.date.clone(), maxDevices: maxDevices }
+              detail: {
+                heatmapDate: d.date.clone(),
+                maxDevices: maxDevices
+              }
             })
           );
         }
@@ -393,7 +409,9 @@ function heatmapChart(options) {
         if (!freezedDay) {
           window.dispatchEvent(
             new CustomEvent("heatmap-date-change", {
-              detail: { heatmapDate: undefined }
+              detail: {
+                heatmapDate: undefined
+              }
             })
           );
         }
@@ -407,7 +425,10 @@ function heatmapChart(options) {
           freezedDay = clickedDay;
           window.dispatchEvent(
             new CustomEvent("heatmap-date-change", {
-              detail: { heatmapDate: d.date.clone(), maxDevices: maxDevices }
+              detail: {
+                heatmapDate: d.date.clone(),
+                maxDevices: maxDevices
+              }
             })
           );
           gFocusFreezedRect
@@ -474,8 +495,8 @@ function heatmapChart(options) {
       .selectAll(".heatmap-cell")
       .filter(
         d =>
-          d.date.isSameOrAfter(minVisibleDate) &&
-          d.date.isSameOrBefore(maxVisibleDate)
+        d.date.isSameOrAfter(minVisibleDate) &&
+        d.date.isSameOrBefore(maxVisibleDate)
       );
 
     visibleCells
@@ -486,8 +507,8 @@ function heatmapChart(options) {
 
     const innerVisibleCells = visibleCells.filter(
       d =>
-        d.date.isSameOrAfter(xAxisMinDate) &&
-        d.date.isSameOrBefore(xAxisMaxDate)
+      d.date.isSameOrAfter(xAxisMinDate) &&
+      d.date.isSameOrBefore(xAxisMaxDate)
     );
 
     maxDevices = d3.max(innerVisibleCells.data(), d => d.devices);
@@ -560,9 +581,9 @@ function heatmapChart(options) {
     .ticks(heatmapWidth / 60)
     .tickSize(0)
     .tickFormat(d =>
-      d === colorScaleMaxDevices
-        ? "≥" + locale.format(",")(d)
-        : locale.format(",")(d)
+      d === colorScaleMaxDevices ?
+      "≥" + locale.format(",")(d) :
+      locale.format(",")(d)
     );
 
   const legendTicks = gLegend.append("g");
@@ -588,7 +609,7 @@ function heatmapChart(options) {
     .attr("fill", colorScale(colorScaleMaxDevices))
     .attr("stroke", maxCellStrokeColor)
     .attr("stroke-width", maxCellStrokeWidth)
-    .each(function() {
+    .each(function () {
       endPosition += legendStripSize;
     });
   gLegendAddition
@@ -597,7 +618,7 @@ function heatmapChart(options) {
     .attr("y", legendStripSize / 2)
     .attr("dy", "0.35em")
     .text("Max Number of Devices")
-    .each(function() {
+    .each(function () {
       endPosition += this.getBBox().width + 4;
     });
 
@@ -609,7 +630,7 @@ function heatmapChart(options) {
     .attr("width", legendStripSize)
     .attr("height", legendStripSize)
     .attr("fill", colorScale(0))
-    .each(function() {
+    .each(function () {
       endPosition += legendStripSize + 8;
     });
   zeroCellLegend
@@ -632,7 +653,7 @@ function heatmapChart(options) {
     .attr("y", legendStripSize / 2)
     .attr("dy", "0.35em")
     .text("No Observations")
-    .each(function() {
+    .each(function () {
       endPosition += this.getBBox().width + 4;
     });
 
@@ -642,7 +663,8 @@ function heatmapChart(options) {
   //// Panning ///////////////////////////////////////////////
   ////////////////////////////////////////////////////////////
   let transformXN = 0;
-  function zoomed(d) {
+
+  function zoomed() {
     tooltip.style("opacity", 0);
 
     // Snap to the nearest day
@@ -702,18 +724,6 @@ function heatmapChart(options) {
     tooltip.transition().style("opacity", 0);
   }
 
-  function showInfoTooltip() {
-    const html = `
-      <div>Place text here</div>
-    `;
-    tooltip.html(html);
-    tooltip
-      .style("left", d3.event.clientX + 5 + "px")
-      .style("top", d3.event.clientY + 5 + "px")
-      .transition()
-      .style("opacity", 1);
-  }
-
   // Init
   updateHeatmap();
   updateAxes();
@@ -744,7 +754,10 @@ function heatmapChart(options) {
     const visibleHeight = padding.top + heatmapHeight + padding.bottom;
 
     zoom
-      .extent([[0, 0], [heatmapWidth, heatmapHeight]])
+      .extent([
+        [0, 0],
+        [heatmapWidth, heatmapHeight]
+      ])
       .translateExtent([
         [heatmapWidth - cellSize * allDates.length, 0],
         [heatmapWidth, heatmapHeight]

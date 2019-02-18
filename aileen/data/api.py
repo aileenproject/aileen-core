@@ -1,7 +1,10 @@
 from django.http import JsonResponse
+from django.http import HttpResponse
 
 from data.models import SeenByHour
 from data.queries import prepare_df_datetime_index
+from data.queries import compute_kpis
+from server.models import AileenBox
 
 
 def devices_by_box_id(request, box_id):
@@ -42,3 +45,47 @@ def devices(request):
 
     data = seen_by_hour_df.to_dict("records")
     return JsonResponse(data, safe=False)
+
+
+def kpis_by_box_id(request, box_id):
+    """
+    returns the kpis by box id
+    """
+    try:
+        kpis = compute_kpis(box_id)
+        # customize the kpis
+
+        kpis["running_since"] = ""
+        kpis["devices_seen_per_day"] = int(kpis["devices_seen_per_day"])
+
+        # by day
+        kpis["busyness"]["by_day"]["num_devices"] = int(
+            kpis["busyness"]["by_day"]["num_devices"]
+        )
+        kpis["busyness"]["by_day"]["percentage_margin_to_second"] = ""
+        kpis["busyness"]["by_day"]["num_devices_mean"] = float(
+            kpis["busyness"]["by_day"]["num_devices_mean"]
+        )
+        kpis["busyness"]["by_day"]["percentage_margin_to_mean"] = float(
+            kpis["busyness"]["by_day"]["percentage_margin_to_mean"]
+        )
+
+        # by hour
+        kpis["busyness"]["by_hour"]["num_devices"] = int(
+            kpis["busyness"]["by_hour"]["num_devices"]
+        )
+        kpis["busyness"]["by_hour"]["hour_of_day"] = int(
+            kpis["busyness"]["by_hour"]["hour_of_day"]
+        )
+        kpis["busyness"]["by_hour"]["percentage_margin_to_second"] = ""
+        kpis["busyness"]["by_hour"]["num_devices_mean"] = float(
+            kpis["busyness"]["by_hour"]["num_devices_mean"]
+        )
+        kpis["busyness"]["by_hour"]["percentage_margin_to_mean"] = float(
+            kpis["busyness"]["by_hour"]["percentage_margin_to_mean"]
+        )
+
+    except:
+        kpis = {"none": None}
+
+    return JsonResponse(kpis)

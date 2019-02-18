@@ -168,7 +168,7 @@ if AILEEN_MODE in ("server", "both"):
 TERM_LBL = "[Aileen]"
 
 #  ---- Box Settings
-
+BOX_PORT = os.environ.get("BOX_PORT", default = 80)
 # The wifi interface names on which your device might sit.
 # Factory identifier and maybe the one airmon uses after it ran. Use a comma-separated list for more than one.
 WIFI_INTERFACES = os.environ.get("WIFI_INTERFACES", default="wlan1")

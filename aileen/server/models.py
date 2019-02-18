@@ -2,7 +2,7 @@ from django.db import models
 from djgeojson.fields import PointField
 
 from data.models import SeenByDay
-
+ 
 
 class AileenBox(models.Model):
 

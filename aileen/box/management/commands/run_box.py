@@ -66,7 +66,7 @@ def run_box(sudo_password: str):
 
     command = (
         f"echo {sudo_password} | sudo -S {settings.ACTIVATE_VENV_CMD} {sys.executable}"
-        f" manage.py runserver 0.0.0.0:80"
+        f" manage.py runserver 0.0.0.0:{str(settings.BOX_PORT)}"
     )
     run_command_in_tmux(
         tmux_session, command, restart_after_n_seconds=3, window_name="local_dashboard"
