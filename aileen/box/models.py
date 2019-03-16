@@ -10,6 +10,8 @@ class BoxSettings(models.Model):
     box_id = models.CharField(max_length=256, default=uuid.uuid4, editable=False)
     server_url = models.URLField()
     upload_token = models.CharField(max_length=120)
+    # minimal signal power needed to record an event
+    min_power = models.IntegerField(default=0)
     events_uploaded_until = models.ForeignKey(
         "data.DevicesEvents", null=True, blank=True
     )

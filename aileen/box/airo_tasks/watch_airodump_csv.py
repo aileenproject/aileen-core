@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import logging
 
 import pandas as pd
 import pandas.errors as pandas_errors
@@ -7,6 +8,9 @@ import pytz
 from django.conf import settings
 
 from box.utils.privacy_utils import hash_mac_address
+
+
+logger = logging.getLogger(__name__)
 
 
 def find_csv(csv_filename_prefix: str, target_dir: str = None) -> str:
@@ -40,7 +44,7 @@ def parse_airomon_datetime(airomon_dt: str) -> datetime:
     return dt
 
 
-def get_devices_from_csv_df(csv_filename: str) -> pd.DataFrame:
+def get_device_data_from_csv_file(csv_filename: str, min_power: int) -> pd.DataFrame:
     """Read in the data frame and use only the columns which contain device info"""
     try:
         df = pd.read_csv(csv_filename, header=None, usecols=range(0, 6))
@@ -90,12 +94,16 @@ def get_devices_from_csv_df(csv_filename: str) -> pd.DataFrame:
     df["access_point_id"] = df["access_point_id"].map(lambda x: str(x).strip())
     df["device_power"] = df["device_power"].map(lambda x: str(x).strip())
 
-    return df
+    # filter out events with too weak signal
+    df_signal = df[df["device_power"].float() >= min_power]
+    logger.info("%d events had a signal weaker than %d" % (len(df.index) - len(df_signal.index), min_power))
+
+    return df_signal
 
 
-def read_airodump_csv_and_return_df(airodump_dir: str, csv_filename_prefix: str):
-    data_csv = find_csv(csv_filename_prefix, target_dir=airodump_dir)
-    df = get_devices_from_csv_df(data_csv)
+def read_airodump_csv_and_return_df(airodump_dir: str, csv_filename_prefix: str, min_power: int):
+    airodump_csv = find_csv(csv_filename_prefix, target_dir=airodump_dir)
+    df = get_device_data_from_csv_file(airodump_csv, min_power)
     return df
 
 
