@@ -11,7 +11,7 @@ setup(
         "pre-commit",
         "black",
         "Click",
-        "django==1.11.18",
+        "django==1.11.19",
         "django-bootstrap3",
         "django-geojson",
         "django-leaflet",
