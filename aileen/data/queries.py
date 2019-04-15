@@ -150,17 +150,18 @@ def compute_kpis(box_id="None") -> Dict:
         hour_means = seen_by_hour_df.seen.groupby([seen_by_hour_df.index.hour]).mean()
         if len(hour_means.index) > 1:
             hour_means.sort_values(ascending=False, inplace=True)
+            kpis["busyness"]["by_hour"]["num_devices_mean"] = round(hour_means.mean(), 2)
             kpis["busyness"]["by_hour"]["hour_of_day"] = hour_means.index[0]
             kpis["busyness"]["by_hour"]["num_devices"] = round(
                 hour_means[hour_means.index[0]], 2
             )
-            # Compute this with second busiest as reference - we measure increase from there
-            kpis["busyness"]["by_hour"]["percentage_margin_to_second"] = round(
+            # Compute this with mean as reference - we measure increase from there
+            kpis["busyness"]["by_hour"]["percentage_margin_to_mean"] = round(
                 (
                     hour_means.loc[hour_means.index[0]]
-                    - hour_means.loc[hour_means.index[1]]
+                    - hour_means.mean()
                 )
-                / hour_means.loc[hour_means.index[1]]
+                / hour_means.mean()
                 * 100,
                 2,
             )
@@ -175,6 +176,7 @@ def compute_kpis(box_id="None") -> Dict:
         # dayofweek are 0 to 6 here
         day_means = seen_by_day_df.seen.groupby([seen_by_day_df.index.dayofweek]).mean()
         if len(day_means.index) > 1:
+            kpis["busyness"]["by_day"]["num_devices_mean"] = round(day_means.mean(), 2)
             day_means.sort_values(ascending=False, inplace=True)
             week_day_names = (
                 "Monday",
@@ -187,9 +189,9 @@ def compute_kpis(box_id="None") -> Dict:
             )
             kpis["busyness"]["by_day"]["weekday"] = week_day_names[day_means.index[0]]
             kpis["busyness"]["by_day"]["num_devices"] = day_means[day_means.index[0]]
-            kpis["busyness"]["by_day"]["percentage_margin_to_second"] = round(
-                (day_means.loc[day_means.index[0]] - day_means.loc[day_means.index[1]])
-                / day_means.loc[day_means.index[1]]
+            kpis["busyness"]["by_day"]["percentage_margin_to_mean"] = round(
+                (day_means.loc[day_means.index[0]] - day_means.mean())
+                / day_means.mean()
                 * 100,
                 2,
             )
@@ -223,7 +225,7 @@ def data_from_selected_device(device_id) -> pd.DataFrame:
         .drop("total_packets", 1)
     )
     device_info["time_seen"] = device_info["time_seen"].map(
-        lambda x: x.strftime("%Y-%m-%d %H:%M:%S")
+        lambda x: x.replace(tzinfo=None).strftime("%Y-%m-%d %H:%M:%S")
     )
 
     return device_info
@@ -248,8 +250,9 @@ def data_for_device_per_unit_time(device_id):
         .rename(columns={"device": "seen_count"})
         .reset_index()
     )
-    id_power_packets["time"] = id_power_packets["time"].map(lambda x: x.timestamp())
+    id_power_packets["time"] = id_power_packets["time"].map(
+        lambda x: x.replace(tzinfo=None).timestamp()
+    )
 
     data = id_power_packets.to_dict("records")
-    print(data)
     return data

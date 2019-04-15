@@ -1,23 +1,23 @@
 {% load humanize %}
 
 <div class="row" style="margin-bottom: 40px; font-size: 1rem; padding-top: 5px;">
-  <div class="col-md-4 col-lg-3">
+  <div class="col-md-6 col-lg-3">
     <div class="card aileen-card">
-      <h5 class="card-header text-center aileen-widget-header">The Busiest Hour on Average</h5>
+      <h5 class="card-header text-center aileen-widget-header">Busiest Time of Day</h5>
       <div class="card-body aileen-body">
         <div class="row">
           <div class="col-md-6 aileen-button text-center">
-            <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button"
+            <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button infoButton"
                     data-toggle="tooltip"
-                    title="{{ kpis.busyness.by_hour.hour_of_day }}:00 is the average busiest hour since all of the days Aileen has been running. On average - during this hour - {{kpis.busyness.by_hour.num_devices | floatformat:"0"}} devices have been seen.">
-              {{ kpis.busyness.by_hour.hour_of_day }}:00
+                    title="Overall, the average busiest time of day is between {{ busiest_hour_range}}">
+              {{ busiest_hour_range }}
             </button>
           </div>
           <div class="col-md-6 aileen-button text-center">
-            <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button"
+        <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button infoButton"
                     data-toggle="tooltip"
-                    title="{{kpis.busyness.by_hour.percentage_margin_to_second | floatformat:"0"}}% more devices were seen during this hour than the next busiest hour.">
-                    {{kpis.busyness.by_hour.percentage_margin_to_second | floatformat:"0"}}% more
+                    title="On average, {{kpis.busyness.by_hour.num_devices}} are seen during this time period, which is {{kpis.busyness.by_hour.percentage_margin_to_mean | floatformat:"0"}}% more than the hourly average of {{ kpis.busyness.by_hour.num_devices_mean | floatformat:"0" }} devices.">
+                    + {{kpis.busyness.by_hour.percentage_margin_to_mean | floatformat:"0"}}%
             </button>
           </div>
         </div>
@@ -25,49 +25,57 @@
     </div>
 <!-- the average busiest weekday -->
   </div>
-  <div class="col-md-4 col-lg-3">
+  <div class="col-md-6 col-lg-3">
     <div class="card aileen-card">
-      <h5 class="card-header text-center aileen-widget-header">The Average Busiest Day of the Week</h5>
+      <h5 class="card-header text-center aileen-widget-header">Busiest Day of the Week</h5>
       <div class="card-body aileen-body">
         <div class="row">
           <div class="col-md-6 aileen-button text-center">
-            <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button"
+            <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button infoButton"
                     data-toggle="tooltip"
-                    title="Since Aileen has been running {{ kpis.busyness.by_day.weekday }} is - on average - the busiest weekday seening - on average - {{ kpis.busyness.by_day.num_devices | intcomma }} devices.">
+                    title="Overall, the average busiest day of the week is {{ kpis.busyness.by_day.weekday }}.">
                     {{ kpis.busyness.by_day.weekday}}
             </button>
           </div>
           <div class="col-md-6 aileen-button text-center">
-            <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button"
+            <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button infoButton"
                     data-toggle="tooltip"
-                    title="{{kpis.busyness.by_day.percentage_margin_to_second | floatformat:"0"}}% more devices were seen on {{ kpis.busyness.by_day.weekday}} than the next busiest weekday.">
-                    {{kpis.busyness.by_day.percentage_margin_to_second | floatformat:"0"}}% more
+                    title="{{ kpis.busyness.by_day.weekday}}s see a {{kpis.busyness.by_day.percentage_margin_to_mean | floatformat:"0"}}% growth in traffic. The average number of devices on {{ kpis.busyness.by_day.weekday}} is {{ kpis.busyness.by_day.num_devices | intcomma }}, compared with an overall daily average of {{ kpis.busyness.by_day.num_devices_mean  | floatformat:"0" }} devices.">
+                    + {{kpis.busyness.by_day.percentage_margin_to_mean | floatformat:"0"}}%
             </button>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <!-- Number of devices seen before -->
-  <div class="col-md-4 col-lg-3">
+  <!-- Length of stay -->
+  <div class="col-md-6 col-lg-3">
     <div class="card aileen-card">
-      <h5 class="card-header text-center aileen-widget-header">Number of Devices Seen Before</h5>
+      <h5 class="card-header text-center aileen-widget-header">Length of Stay</h5>
       <div class="card-body aileen-body">
         <div class="row">
           <div class="col-md-6 aileen-button text-center">
-            <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button"
+            <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button infoButton"
                     data-toggle="tooltip"
-                    title="Percent of devices which were seen at a given hour once during the preceeding hour as well, averaging over all hours." >
-              Hourly {{ kpis.stasis.by_hour | floatformat:"0" }}%
+                    title="In any given hour, {{ kpis.stasis.by_hour | floatformat:"0" }} percent of devices are already present for at least an hour (they were also seen during the preceding hour)." >
+              &#8805; 1 Hour : {{ kpis.stasis.by_hour | floatformat:"0" }}%
             </button>
           </div>
           <div class="col-md-6 aileen-button text-center">
-            <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button"
+            <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button infoButton"
                     data-toggle="tooltip"
-                    title="Percent of devices which were seen at a given day and the preceeding day as well. This percentage is calculated for each day and the average of these percentages is given here.">
-              Daily {{ kpis.stasis.by_day | floatformat:"0" }}%
+                    title="On any given day, {{ kpis.stasis.by_day | floatformat:"0" }} percent of devices are already present for at least one day (they were also seen during the preceding day)." >
+              &#8805; 1 Day : {{ kpis.stasis.by_day | floatformat:"0" }}%
             </button>
           </div>
+      <!--    <div class="col-md-4 aileen-button text-center">
+            <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button infoButton"
+                    data-toggle="tooltip"
+                    title="On any given day, {{ kpis.stasis.by_week | floatformat:"0" }} percent of devices are likely to be already present for at least one week (they were also seen during the day one week earlier)." >
+            &#8805; 1 Week : {{ kpis.stasis.by_week | floatformat:"0" }}%
+            </button>
+          </div> -->
+
         </div>
       </div>
     </div>
