@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from data.models import SeenByHour
 from data.queries import prepare_df_datetime_index
 from data.queries import compute_kpis
-from server.models import AileenBox
 
 
 def devices_by_box_id(request, box_id):
