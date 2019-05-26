@@ -53,18 +53,19 @@ sudo chmod 755 /tmp/
 
 # Create service scripts for aileen box
 echo "#!/bin/bash
-cd ${AILEEN_SCRIPT_LOCATION}
+cd ${AILEEN_SCRIPT_LOCATION}/aileen
 python3 manage.py run_box
 " > ${AILEEN_SCRIPT_LOCATION}/start_aileen.sh
 
 echo "#!/bin/bash
-cd ${AILEEN_SCRIPT_LOCATION}
+cd ${AILEEN_SCRIPT_LOCATION}/aileen
 python3 manage.py stop_box
 " > ${AILEEN_SCRIPT_LOCATION}/stop_aileen.sh
 
 
 # create the aileen service
-sudo echo "Description=Run aileen box
+sudo echo "[Unit]
+Description=Run aileen box
 
 [Service]
 Type=forking
