@@ -11,11 +11,11 @@ class BoxSettings(models.Model):
     server_url = models.URLField()
     upload_token = models.CharField(max_length=120)
     events_uploaded_until = models.ForeignKey(
-        "data.DevicesEvents", null=True, blank=True
+        "data.DevicesEvents", null=True, blank=True, on_delete=models.PROTECT
     )
     aggregations_uploaded_until = models.DateTimeField(null=True)
     tmux_status_uploaded_until = models.ForeignKey(
-        "data.TmuxStatus", null=True, blank=True
+        "data.TmuxStatus", null=True, blank=True, on_delete=models.PROTECT
     )
 
     objects = models.Manager()
