@@ -78,11 +78,11 @@ def update_database_with_new_and_updated_devices(airodump_events_df: pd.DataFram
     ].rename(columns={"time_seen": "time_last_seen"})
 
     # And now it is time to let the database know about all of this.
-    # First the devices, then evens, so that the FK relation from events to devices works.
+    # First the devices, then events, so that the FK relation from events to devices works.
     with transaction.atomic():
         created = UniqueDevices.save_from_df(unique_devices_with_recent_updates_df)
         logger.info(
-            f"finished saving {len(unique_devices_with_recent_updates_df.index)} unique devices {created} were new."
+            f"Finished saving {len(unique_devices_with_recent_updates_df.index)} unique devices {created} were new."
         )
 
         box_settings = BoxSettings.objects.first()
@@ -94,17 +94,19 @@ def update_database_with_new_and_updated_devices(airodump_events_df: pd.DataFram
             updated_device_events_df, box_settings.box_id
         )
         logger.info(
-            f"finished saving {len(updated_device_events_df.index)} updated device events, {created} were new."
+            f"Finished saving {len(updated_device_events_df.index)} updated device events, {created} were new."
         )
 
 
 def csv_file_to_db(tmp_path: str, csv_filename_prefix: str):
     logger.info(f"{settings.TERM_LBL} Starting to watch the airodump file ...")
+    box_settings = BoxSettings.objects.first()
 
     while True:
         start_time = time.time()
-
-        airodump_df = read_airodump_csv_and_return_df(tmp_path, csv_filename_prefix)
+        airodump_df = read_airodump_csv_and_return_df(
+            tmp_path, csv_filename_prefix, box_settings.min_power
+        )
         update_database_with_new_and_updated_devices(airodump_df)
         sleep_until_interval_is_complete(
             start_time, settings.AIRODUMP_LOG_INTERVAL_IN_SECONDS

@@ -10,6 +10,9 @@ class BoxSettings(models.Model):
     box_id = models.CharField(max_length=256, default=uuid.uuid4, editable=False)
     server_url = models.URLField()
     upload_token = models.CharField(max_length=120)
+    # Minimal signal power needed to record an event. Look out: values are negative and bigger is better.
+    # Learn more at https://www.metageek.com/training/resources/understanding-rssi.html
+    min_power = models.IntegerField(default=-70)
     events_uploaded_until = models.ForeignKey(
         "data.DevicesEvents", null=True, blank=True, on_delete=models.PROTECT
     )
