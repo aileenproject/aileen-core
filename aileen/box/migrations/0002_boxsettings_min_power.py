@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='boxsettings',
             name='min_power',
-            field=models.IntegerField(default=0),
+            field=models.IntegerField(default=-70),
         ),
     ]
