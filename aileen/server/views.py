@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
-from data.models import TmuxStatus, UniqueDevices
+from data.models import TmuxStatus
 from data.queries import compute_kpis
 from server.models import AileenBox
 
@@ -26,7 +26,7 @@ def box(request, box_id):
     # filter by box ID to get name
     box_name = AileenBox.objects.filter(box_id=box_id).get().name
     try:
-        airodump_ng_status = TmuxStatus.objects.filter(box_id=box_id).last().airodump_ng
+        sensor_status = TmuxStatus.objects.filter(box_id=box_id).last().sensor_status
     except:
         airodump_ng_status = "No statis available"
 
@@ -56,7 +56,7 @@ def box(request, box_id):
         "box_coordinates": box_coordinates,
         "kpis": kpis,
         "busiest_hour_range": busiest_hour_range,
-        "airodump_ng_status": airodump_ng_status,
+        "sensor_status": sensor_status,
     }
 
     template = "server/box.html"

@@ -1,15 +1,14 @@
 import logging
 import sys
 import time
+import importlib
 from getpass import getpass
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from box.airo_tasks import run_airodump_in_tmux
-from box.airo_tasks.start_airodump import find_interface
 from box.models import BoxSettings
-from box.utils.dir_handling import clean_tmp_files
+from box.utils.dir_handling import clean_tmp_files, build_tmp_dir_name
 from box.utils.tmux_handling import run_command_in_tmux, start_tmux_session
 
 logger = logging.getLogger(__name__)
@@ -21,23 +20,50 @@ def check_preconditions():
         logger.error("No box settings found. Please add from the admin panel.")
         sys.exit(2)
 
-    # check if we can find the network interface to monitor
-    find_interface(settings.WIFI_INTERFACES)
+    if settings.PATH_TO_SENSOR == "":
+        logger.error("PATH_TO_SENSOR setting is not set!")
+        sys.exit(2)
+    logger.info(
+        f"{settings.TERM_LBL} Using {settings.PATH_TO_SENSOR} as the sensor module ..."
+    )
+
+    sensor = importlib.import_module(settings.PATH_TO_SENSOR)
+    sensor.check_preconditions()
 
     if settings.HASH_MAC_ADDRESSES is False:
         logger.warning("HASH_MAC_ADDRESSES is False!")
 
 
-def run_box(sudo_password: str):
-    """
-    Start the tools necessary to detect clients and upload the data in tmux sessions.
+def start_sensor_in_tmux(
+    tmux_session, sudo_password: str = None, new_window: bool = False
+):
+    tmp_dir = build_tmp_dir_name()
+    logger.info(f"{settings.TERM_LBL} Starting the sensor ...")
+    run_command_in_tmux(
+        tmux_session,
+        "%s%s -c 'import importlib; sensor=importlib.import_module(%s); sensor.start_sensing(%s)'"
+        % (
+            "%s " % sudo_password if sudo_password else "",
+            sys.executable,
+            settings.PATH_TO_SENSOR,
+            tmp_dir,
+        ),
+        new_window=new_window,
+        restart_after_n_seconds=3,
+        window_name="sensor",
+    )
 
-    One session runs airodump, another transfers its output to the Aileen database. The third session uploads.
-    We're attempting to keep running even in bad situations, so we restart the first two commands after 3 seconds
-    if they fail for any reason. The upload command will remember what could be uploaded successfully and retry from
-    the last success otherwise.
-    The sudo password is currently needed to run airodump.
-    TODO: One could also add it to commands that do not need that.
+
+def run_box(sudo_password: str = None):
+    """
+    Start the tools necessary to run the sensor and upload aggregated data in tmux sessions.
+
+    One session runs the sensor (this might need sudo rights), another transfers
+    its output to the Aileen database. The third session uploads.
+    We're attempting to keep running even in bad situations, so we restart the first
+    two commands after 3 seconds if they fail for any reason.
+    The upload command will remember what could be uploaded successfully and otherwise
+    retry from the last success.
     """
 
     check_preconditions()
@@ -46,12 +72,10 @@ def run_box(sudo_password: str):
         settings.TMUX_SESSION_NAME, cleanup_func=clean_tmp_files
     )
 
-    logger.info(f"{settings.TERM_LBL} Starting the airodump tool ...")
-
-    run_airodump_in_tmux(tmux_session, sudo_password)
+    start_sensor_in_tmux(tmux_session, sudo_password, new_window=False)
 
     # now start putting event data into the db
-    time.sleep(settings.AIRODUMP_LOG_INTERVAL_IN_SECONDS / 4)
+    time.sleep(settings.SENSOR_LOG_INTERVAL_IN_SECONDS / 4)
     run_command_in_tmux(
         tmux_session,
         "%s %s manage.py record_events_to_db"
@@ -108,7 +132,10 @@ class Command(BaseCommand):
     help = "Starts the process of detecting devices and upload the data."
 
     def handle(self, *args, **kwargs):
+        if not settings.SUDO_PWD_REQUIRED:
+            run_box()
+            return
         if settings.SUDO_PWD is not None and settings.SUDO_PWD != "":
-            run_box(settings.SUDO_PWD)
+            run_box(sudo_password=settings.SUDO_PWD)
         else:
-            run_box(getpass("sudo password:"))
+            run_box(sudo_password=getpass("Sudo password (required to start sensor):"))

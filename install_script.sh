@@ -42,7 +42,7 @@ psudo() { sudo env PATH="$PATH" "$@"; }
 
 # install and configure postgresql
 # sudo apt-get install postgresql postgresql-contrib -y
-# TODO
+# TODO we're using sqlite for now
 
 # install zsh because it's just nice
 sudo apt install zsh

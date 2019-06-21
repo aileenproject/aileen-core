@@ -67,7 +67,9 @@ if __name__ == "__main__":
     new_session = start_tmux_session("test")
 
     run_command_in_tmux(
-        session=new_session, cmd="python start_airodump.py", new_window=False
+        session=new_session,
+        cmd="python -c 'import time; while True: print(\"Test\"); time.sleep(2)'",
+        new_window=False,
     )
 
     kill_tmux_session("test")

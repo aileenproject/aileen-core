@@ -17,7 +17,7 @@ from server.models import AileenBox
 logger = logging.getLogger(__name__)
 
 
-def makeup_number_devices(dt: datetime, options: dict) -> float:
+def makeup_number_observables(dt: datetime, options: dict) -> float:
     weekday_multipliers = [1, 1.1, 1.45, 1.31, 1, 1, 1.13]
     x = options["base_busyness"] * random.gauss(1, 0.05)
     if dt.hour >= 23 or dt.hour <= 8:
@@ -93,7 +93,7 @@ class Command(BaseCommand):
             nargs="?",
             type=str,
             default="4.925,52.393",
-            help="Latitude and longitude if the bix is created anew, separated by a comma.",
+            help="Latitude and longitude if the box is created anew, separated by a comma.",
         )
 
     def handle(self, *args, **options):
@@ -133,7 +133,7 @@ class Command(BaseCommand):
 
         time_slots = pd.date_range(options["start"], options["end"], freq="1H")
         for dt in time_slots:
-            x = makeup_number_devices(dt, options)
+            x = makeup_number_observables(dt, options)
             hourly.append(
                 SeenByHour(
                     box_id=options["box_id"],

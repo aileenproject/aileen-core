@@ -4,7 +4,7 @@ from djgeojson.fields import PointField
 import numpy as np
 
 from data.models import SeenByDay
- 
+
 
 class AileenBox(models.Model):
 
@@ -20,13 +20,15 @@ class AileenBox(models.Model):
         verbose_name_plural = "Aileen boxes"
 
     @property
-    def average_devices_per_day(self):
-        devices_each_day = SeenByDay.pdobjects.filter(box_id=self.box_id).to_dataframe()
-        devices_each_day = devices_each_day[devices_each_day["seen"] != 0]
-        mean = devices_each_day["seen"].mean()
+    def average_observables_per_day(self):
+        observables_each_day = SeenByDay.pdobjects.filter(
+            box_id=self.box_id
+        ).to_dataframe()
+        observables_each_day = observables_each_day[observables_each_day["seen"] != 0]
+        mean = observables_each_day["seen"].mean()
         if mean is np.nan:
             return 0
-        return int(devices_each_day["seen"].mean())
+        return int(observables_each_day["seen"].mean())
 
     def __str__(self):
         return f"{self.name}: {self.description}, located at {self.geom}"

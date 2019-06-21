@@ -14,6 +14,6 @@ def build_tmp_dir_name(ensure_existence=True):
 def clean_tmp_files():
     tmp_path = build_tmp_dir_name()
     for tmp_file in [
-        f for f in os.listdir(tmp_path) if f.startswith(settings.AIRODUMP_FILE_PREFIX)
+        f for f in os.listdir(tmp_path) if f.startswith(settings.SENSOR_FILE_PREFIX)
     ]:
         os.remove("%s/%s" % (tmp_path, tmp_file))

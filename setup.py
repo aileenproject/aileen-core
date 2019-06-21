@@ -15,6 +15,7 @@ setup(
         "django-bootstrap3",
         "django-geojson",
         "django-leaflet",
+        "django-cors-headers",
         "django-pandas",
         "humanize",
         "libtmux",

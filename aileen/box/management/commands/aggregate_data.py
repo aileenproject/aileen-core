@@ -11,7 +11,12 @@ from django.db import transaction
 from box.models import BoxSettings
 from data.models import SeenByDay, SeenByHour, TmuxStatus
 from data.queries import get_unique_device_ids_seen
-from data.time_utils import as_day, as_hour, get_most_recent_hour, sleep_until_interval_is_complete
+from data.time_utils import (
+    as_day,
+    as_hour,
+    get_most_recent_hour,
+    sleep_until_interval_is_complete,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +126,7 @@ def get_unaggregated_hours(dt_from: datetime, dt_until: datetime) -> List[dateti
 
 
 def get_unaggregated_days(dt_from: datetime, dt_until: datetime) -> List[datetime]:
-    """Look back in time to see which days (start time) are not yet aggregated, but should be,"""
+    """Look back in time to see which days (start time) are not yet aggregated, but should be."""
     days_without_integration = []
     box_settings = BoxSettings.objects.first()
     for day in pd.date_range(as_day(dt_from), as_day(dt_until), freq="1D"):
