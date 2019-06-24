@@ -4,10 +4,10 @@ import pandas as pd
 from django.db import models
 
 # we get generic json support from a third-party lib,
-# even though native support would be given - for pg only.
+# even though native support would be given - but for pg/mysql only.
 from jsonfield import JSONField
-
 from django_pandas.managers import DataFrameManager
+
 
 """ Data models shared between boxes and servers. This is the core data we are collecting."""
 
@@ -23,7 +23,7 @@ class Observables(models.Model):
     pdobjects = DataFrameManager()
 
     def __str__(self):
-        return str(self.device_id)
+        return str(self.observable_id)
 
     def __repr__(self):
         return "<Observable [%s]; last seen: %s>" % (
@@ -37,7 +37,7 @@ class Observables(models.Model):
 
     @staticmethod
     def save_from_df(df: pd.DataFrame) -> int:
-        """Save observablees in the df to the database. Return how many were newly created."""
+        """Save observables in the df to the database. Return how many were newly created."""
         created = 0
         for observable in df.reset_index(level=0).to_dict("records"):
             observable_id = observable["observable_id"]
@@ -52,7 +52,7 @@ class Observables(models.Model):
 
     @staticmethod
     def to_df():
-        return Observables.pdobjects.all().to_dataframe(index="observables_id")
+        return Observables.pdobjects.all().to_dataframe(index="observable_id")
 
 
 class Events(models.Model):
@@ -61,14 +61,8 @@ class Events(models.Model):
     time_seen = models.DateTimeField()
     # refers to BoxSettings or AileenBox, depending on whether we're on a box or on a server
     observable = models.ForeignKey(Observables, null=False, on_delete=models.CASCADE)
+    value = models.FloatField(default=0)
     observations = JSONField()
-
-    """
-    device_power = models.IntegerField()
-    access_point_id = models.CharField(max_length=100)
-    total_packets = models.IntegerField()
-    packets_captured = models.IntegerField()
-    """
 
     class Meta:
         unique_together = (("observable", "time_seen"),)
@@ -80,52 +74,36 @@ class Events(models.Model):
         return str(self)
 
     def __str__(self):
-        return "Event<%d> observable:<%s> time seen: %s" % (
-            self.id,
-            self.observable,
-            self.time_seen,
+        return (
+            "Event<%d> observable:<%s> time seen: %s, value: %.4f, observations: %s"
+            % (self.id, self.observable, self.time_seen, self.value, self.observations)
         )
 
     @staticmethod
-    def save_from_df(event_df: pd.DataFrame, box_id: str) -> int:
+    def save_from_df(events_df: pd.DataFrame, box_id: str) -> int:
         """Save events in the df to the database. Return how many were newly created.
         """
         created = 0
         if box_id is None or box_id == "":
             raise Exception("No Box ID given.")
-        for event in event_df.reset_index(level=0).to_dict("records"):
+        for event in events_df.reset_index(level=0).to_dict("records"):
             event["box_id"] = box_id
 
-            observable: Observables = Observables.find_observable_by_id(
-                event["observable_id"]
-            )
-
-            new_total_packets = int(event["total_packets"])
-            # use a try except block in case the device does not yet exist
-            try:
-                last_total_packets = int(
-                    Events.find_device_by_id(device).iloc[-1].total_packets
-                )
-                # we need some way to determine the amount of packets that were captured
-                # there is a possibility that the airodump-ng csv file had to restart
-                # therefor we need to check if this is a continuation of the airodump csv or if it is new
-                if last_total_packets < new_total_packets:
-                    packets_captured = new_total_packets - last_total_packets
-                else:
-                    # a device exists but airomon restarted
-                    packets_captured = new_total_packets
-            except:
-                # it is the 1st time a device was seen
-                packets_captured = new_total_packets
-
-            event.pop("observable_id")
+            observable_id = event.pop("observable_id")
+            if "time_seen" not in event:
+                raise Exception("time_seen missing in the event data.")
             time_seen = event["time_seen"]
+            if "value" not in event:
+                raise Exception("value missing in the event data.")
+            value = event["value"]
+            observations = event["observations"]
 
             event.pop("time_seen")
-            _, was_created = Observables.objects.update_or_create(
-                observable_id=observable,
+            _, was_created = Events.objects.update_or_create(
+                observable_id=observable_id,
                 time_seen=time_seen,
-                packets_captured=packets_captured,
+                value=value,
+                observations=observations,
                 defaults=dict(**event),
             )
             if was_created:
@@ -133,11 +111,11 @@ class Events(models.Model):
         return created
 
     @staticmethod
-    def find_by_observable_id(observable_id: str):
+    def find_by_observable_id(observable_id: str) -> pd.DataFrame:
         return Events.pdobjects.filter(observable_id=observable_id).to_dataframe()
 
     @staticmethod
-    def find_by_box_id(box_id: str):
+    def find_by_box_id(box_id: str) -> pd.DataFrame:
         return Events.pdobjects.filter(box_id=box_id).to_dataframe()
 
 

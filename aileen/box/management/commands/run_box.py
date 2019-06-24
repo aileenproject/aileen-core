@@ -8,7 +8,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from box.models import BoxSettings
-from box.utils.dir_handling import clean_tmp_files, build_tmp_dir_name
+from box.utils.dir_handling import get_sensor, clean_tmp_files, build_tmp_dir_name
 from box.utils.tmux_handling import run_command_in_tmux, start_tmux_session
 
 logger = logging.getLogger(__name__)
@@ -20,18 +20,19 @@ def check_preconditions():
         logger.error("No box settings found. Please add from the admin panel.")
         sys.exit(2)
 
-    if settings.PATH_TO_SENSOR == "":
-        logger.error("PATH_TO_SENSOR setting is not set!")
+    if settings.SENSOR_MODULE == "":
+        logger.error("The SENSOR_MODULE setting is not set!")
         sys.exit(2)
     logger.info(
-        f"{settings.TERM_LBL} Using {settings.PATH_TO_SENSOR} as the sensor module ..."
+        f"{settings.TERM_LBL} Using {settings.SENSOR_MODULE} as the sensor module ..."
     )
 
-    sensor = importlib.import_module(settings.PATH_TO_SENSOR)
-    sensor.check_preconditions()
+    sensor = get_sensor()  # this checks if import went well
+    if hasattr(sensor, "check_preconditions"):
+        sensor.check_preconditions()
 
-    if settings.HASH_MAC_ADDRESSES is False:
-        logger.warning("HASH_MAC_ADDRESSES is False!")
+    if settings.HASH_OBSERVABLE_IDS is False:
+        logger.warning("HASH_OBSERVABLE_IDS is False!")
 
 
 def start_sensor_in_tmux(
@@ -41,11 +42,12 @@ def start_sensor_in_tmux(
     logger.info(f"{settings.TERM_LBL} Starting the sensor ...")
     run_command_in_tmux(
         tmux_session,
-        "%s%s -c 'import importlib; sensor=importlib.import_module(%s); sensor.start_sensing(%s)'"
+        '%s %s%s -c \'import importlib; sensor=importlib.import_module("%s"); sensor.start_sensing("%s")\''
         % (
+            settings.ACTIVATE_VENV_CMD,
             "%s " % sudo_password if sudo_password else "",
             sys.executable,
-            settings.PATH_TO_SENSOR,
+            settings.SENSOR_MODULE,
             tmp_dir,
         ),
         new_window=new_window,
@@ -88,10 +90,16 @@ def run_box(sudo_password: str = None):
         % settings.DATABASES["default"].get("NAME")
     )
 
-    command = (
-        f"echo {sudo_password} | sudo -S {settings.ACTIVATE_VENV_CMD} {sys.executable}"
-        f" manage.py runserver 0.0.0.0:{str(settings.BOX_PORT)}"
-    )
+    # Starting the local dashboard server needs sudo rights if the port is 80
+    if int(settings.BOX_PORT) == 80:
+        command = (
+            f"echo {sudo_password} | sudo -S {settings.ACTIVATE_VENV_CMD} {sys.executable}"
+            f" manage.py runserver 0.0.0.0:{str(settings.BOX_PORT)}"
+        )
+    else:
+        command = (
+            f"{settings.ACTIVATE_VENV_CMD} {sys.executable} manage.py runserver 0.0.0.0:{str(settings.BOX_PORT)}"
+        )
     run_command_in_tmux(
         tmux_session, command, restart_after_n_seconds=3, window_name="local_dashboard"
     )

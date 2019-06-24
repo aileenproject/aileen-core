@@ -6,15 +6,17 @@ from data.queries import prepare_df_datetime_index
 from data.queries import compute_kpis
 
 
-def observables_by_box_id(request, box_id):
+def observables_by_box_id(request, box_id=None):
     """
     FOR D3
     Returns a list of dictionaries containing the following
     [{'time': '<tz-naive timestamp>', 'observables': 115},{...}]
     """
-
+    seen_filter = SeenByHour.pdobjects
+    if box_id is not None:
+        seen_filter = seen_filter.filter(box_id=box_id)
     seen_by_hour_df = prepare_df_datetime_index(
-        SeenByHour.pdobjects.filter(box_id=box_id).to_dataframe(
+        seen_filter.to_dataframe(
             fieldnames=["hour_start", "seen", "seen_also_in_preceding_hour"]
         ),
         time_column="hour_start",
@@ -29,6 +31,10 @@ def observables_by_box_id(request, box_id):
 
     data = seen_by_hour_df.to_dict("records")
     return JsonResponse(data, safe=False)
+
+
+def observables(request):
+    return observables_by_box_id(request, box_id=None)
 
 
 def kpis_by_box_id(request, box_id):

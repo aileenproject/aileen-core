@@ -181,12 +181,15 @@ ACTIVATE_VENV_CMD = (
     else ACTIVATE_VENV_CMD
 )
 
-# Required: Specify where the "sensor" module is, which contains the functionality
-#           used by Aileen (start_sensing, latest_reading_as_df).
-# NOTE: Also add this directory to PYTHONPATH
-PATH_TO_SENSOR = os.environ.get("PATH_TO_SENSOR", default="")
+# Required: Specify which importable module contains the functions
+#           used by Aileen (start_sensing, latest_reading_as_df, check_preconditions).
+#           Make sure it is known to the Python interpreter, so e.g. you could:
+#
+#           export SENSOR_MODULE=aileen_sensing_api
+#           export PYTHONPATH=$PYTHONPATH./path/to/sen
+SENSOR_MODULE = os.environ.get("SENSOR_MODULE", default="")
 
-# This can be used to handle / clean up files produced by the sensor
+# This can be used to find / clean up files produced by the sensor
 SENSOR_FILE_PREFIX = os.environ.get("SENSOR_FILE_PREFIX", "")
 
 # If starting your sensor needs sudo rights, set this to true.
@@ -221,8 +224,8 @@ if PROCESS_RESTART_INTERVAL_IN_SECONDS % STATUS_MONITORING_INTERVAL_IN_SECONDS !
     sys.exit(2)
 
 # whether to hash observable IDs, defaults true
-HASH_MAC_ADDRESSES = (
-    os.environ.get("HASH_OBSERVABLE_IDS", default="True") in TRUTH_STRINGS
+HASH_OBSERVABLE_IDS = (
+    os.environ.get("HASH_OBSERVABLE_IDS", default="False") in TRUTH_STRINGS
 )
 HASH_ITERATIONS = int(
     os.environ.get("HASH_ITERATIONS", default=500_000)

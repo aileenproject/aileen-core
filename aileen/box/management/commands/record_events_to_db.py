@@ -11,7 +11,8 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from box.models import BoxSettings
-from box.utils.dir_handling import build_tmp_dir_name
+from box.utils.dir_handling import get_sensor, build_tmp_dir_name
+from box.utils.privacy_utils import hash_observable_ids
 from data.models import Events, Observables
 from data.time_utils import sleep_until_interval_is_complete
 
@@ -50,7 +51,7 @@ def update_database_with_new_and_updated_observables(sensor_events_df: pd.DataFr
         sort=False,
     )
 
-    # Join the events which the sensora just recorded with information about known observables.
+    # Join the events which the sensor just recorded with information about known observables.
     # The joined df has both time_seen and time_last_seen.
     old_dt = datetime(1970, 1, 1, 1, 1, 1, tzinfo=pytz.timezone(settings.TIME_ZONE))
     events_plus_observable_data_df = (
@@ -72,6 +73,30 @@ def update_database_with_new_and_updated_observables(sensor_events_df: pd.DataFr
         .drop(columns=["time_last_seen"])
         .append(new_observables_events_df.set_index("observable_id"))
     )
+
+    # do custom value adjustments if wanted
+    sensor = get_sensor()
+    if hasattr(sensor, "adjust_event_value"):
+
+        def adjust_event(event_df):
+            observable: Observables = Observables.find_observable_by_id(
+                event_df.name  # observable_id
+            )
+            last_event_value = None
+            try:
+                last_event_df = Events.find_by_observable_id(observable.id).iloc[-1]
+                last_event_value = last_event_df["value"]
+            except:
+                pass
+            event_df["value"] = sensor.adjust_event_value(
+                event_df["value"],
+                last_event_value,
+                event_df["observations"],
+                observable,
+            )
+            return event_df
+
+        updated_events_df = updated_events_df.apply(adjust_event, axis=1)
 
     # To store updates to the observables table,
     # format the updated events as observables.
@@ -100,11 +125,17 @@ def update_database_with_new_and_updated_observables(sensor_events_df: pd.DataFr
 
 def sensor_data_to_db(tmp_path: str):
     logger.info(f"{settings.TERM_LBL} Starting to transfer the sensor input to db ...")
-    sensor = importlib.import_module(settings.PATH_TO_SENSOR)
+    sensor = get_sensor()
 
     while True:
         start_time = time.time()
-        sensor_data_df = sensor.latest_reading_as_df(tmp_path)
+        sensor_data_df = sensor.get_latest_reading_as_df(tmp_path)
+
+        # hash observable IDs if wanted
+        sensor_data_df["observable_id"] = sensor_data_df["observable_id"].map(
+            lambda x: hash_observable_ids(str(x))
+        )
+
         update_database_with_new_and_updated_observables(sensor_data_df)
         sleep_until_interval_is_complete(
             start_time, settings.SENSOR_LOG_INTERVAL_IN_SECONDS

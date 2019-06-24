@@ -8,29 +8,29 @@ from django.core.management.base import BaseCommand
 from django.core.serializers import serialize
 
 from box.models import BoxSettings
-from data.models import DevicesEvents, SeenByDay, SeenByHour, TmuxStatus, UniqueDevices
+from data.models import Events, SeenByDay, SeenByHour, TmuxStatus, Observables
 from data.time_utils import as_day, get_most_recent_hour, get_timezone, sleep_until_interval_is_complete
 
 logger = logging.getLogger(__name__)
 
 
 def upload_latest_events():
-    """Check box settings, upload events and also affected devices."""
+    """Check box settings, upload events and also affected observables."""
     box_settings = BoxSettings.objects.first()
 
     # get events which have an ID higher than the last uploaded one
-    events_query = DevicesEvents.objects.filter(box_id=box_settings.box_id)
+    events_query = Events.objects.filter(box_id=box_settings.box_id)
     latest_event = box_settings.events_uploaded_until
     if latest_event is not None:
         events_query = events_query.filter(id__gt=latest_event.id)
     events = events_query.order_by("id").all()[: settings.UPLOAD_MAX_NUMBER_PER_REQUEST]
 
-    # get queries for devices mentioned in these events and record the latest event
-    device_queries = {}
+    # get queries for observables mentioned in these events and record the latest event
+    observable_queries = {}
     new_latest_event = None  # cannot use events.last() as it doesn't understand slicing
     for event in events:
-        device_queries[event.device_id] = UniqueDevices.objects.filter(
-            device_id=event.device_id
+        observable_queries[event.observable_id] = Observables.objects.filter(
+            observable_id=event.observable_id
         )
         new_latest_event = event
 
@@ -41,10 +41,10 @@ def upload_latest_events():
     else:
         logger.info("No events found. Nothing to send.")
         return
-    logger.info(f"I collected {len(device_queries.keys())} devices to send.")
+    logger.info(f"I collected {len(observable_queries.keys())} observables to send.")
 
     payload = dict(
-        devices=f"[{','.join(serialize('json', d)[1:-1] for d in device_queries.values())}]",
+        observables=f"[{','.join(serialize('json', d)[1:-1] for d in observable_queries.values())}]",
         events=serialize("json", events),
     )
 

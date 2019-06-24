@@ -10,6 +10,7 @@ urlpatterns = [
         api.observables_by_box_id,
         name="observables_by_box_id",
     ),
+    url(r"^api/observables/", api.observables, name="observables"),
     url(
         r"^api/kpis_by_box_id/(?P<box_id>[^/]+)/",
         api.kpis_by_box_id,

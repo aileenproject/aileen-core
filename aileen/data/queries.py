@@ -122,12 +122,9 @@ def compute_kpis(box_id="None") -> Dict:
         ),
     )
     kpis["stasis"] = dict(by_hour=None, by_day=None, by_week=None)
-    kpis["running_since"] = (
-        SeenByHour.objects.filter(box_id=box_id)
-        .order_by("hour_start")
-        .first()
-        .hour_start
-    )
+    first_hour = SeenByHour.objects.filter(box_id=box_id).order_by("hour_start").first()
+    if first_hour is not None:
+        kpis["running_since"] = first_hour.hour_start
 
     seen_by_hour_df = prepare_df_datetime_index(
         SeenByHour.pdobjects.filter(box_id=box_id).to_dataframe(
