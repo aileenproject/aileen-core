@@ -148,6 +148,9 @@ class SeenByDay(models.Model):
     objects = models.Manager()
     pdobjects = DataFrameManager()
 
+    class Meta:
+        unique_together = (("box_id", "day_start"),)
+
     def __str__(self):
         return (
             f"<SeenByDay for {self.day_start}: {self.seen}, {self.seen_also_on_preceding_day},"

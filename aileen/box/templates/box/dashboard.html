@@ -22,7 +22,7 @@
 {% include "data/_charts.html" %}
 
 <script type="text/javascript">
-  const aileen_data = `{% url "data:observables" %}`;
+  const aileen_data_url = `{% url "data:aggregations"  %}`;
 </script>
 <script src="{% static 'data/js/heatmapchart.js' %}"></script>
 <script src="{% static 'data/js/radialbarchart.js' %}"></script>

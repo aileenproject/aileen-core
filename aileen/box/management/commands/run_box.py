@@ -45,7 +45,7 @@ def start_sensor_in_tmux(
         '%s %s%s -c \'import importlib; sensor=importlib.import_module("%s"); sensor.start_sensing("%s")\''
         % (
             settings.ACTIVATE_VENV_CMD,
-            "%s " % sudo_password if sudo_password else "",
+            "%s " % sudo_password if sudo_password is not None else "",
             sys.executable,
             settings.SENSOR_MODULE,
             tmp_dir,

@@ -1,5 +1,5 @@
 (function() {
-  const dataURL = aileen_data;
+  const dataURL = aileen_data_url;
 
   d3.json(dataURL).then(data => {
     ////////////////////////////////////////////////////////////
@@ -10,7 +10,7 @@
       d.hour = parseInt(d.time.format("H"));
       d.date = d.time.clone().startOf("day");
       d.dayOfWeek = parseInt(d.time.format("d"));
-      d.devices = +d.devices;
+      d.seen = +d.seen;
     });
 
     const minDate = data[0].time.clone();
@@ -37,8 +37,8 @@
 
     window.addEventListener("heatmap-date-change", event => {
       const heatmapDate = event.detail.heatmapDate;
-      const maxDevices = event.detail.maxDevices;
-      myRadialBarChart.updateDayBars(heatmapDate, maxDevices);
+      const maxSeen = event.detail.maxSeen;
+      myRadialBarChart.updateDayBars(heatmapDate, maxSeen);
     });
   });
 })();

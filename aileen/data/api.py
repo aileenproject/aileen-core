@@ -6,11 +6,11 @@ from data.queries import prepare_df_datetime_index
 from data.queries import compute_kpis
 
 
-def observables_by_box_id(request, box_id=None):
+def aggregations_by_box_id(request, box_id=None):
     """
     FOR D3
     Returns a list of dictionaries containing the following
-    [{'time': '<tz-naive timestamp>', 'observables': 115},{...}]
+    [{'time': '<tz-naive timestamp>', 'seen': 115},{...}]
     """
     seen_filter = SeenByHour.pdobjects
     if box_id is not None:
@@ -22,9 +22,7 @@ def observables_by_box_id(request, box_id=None):
         time_column="hour_start",
     )
 
-    seen_by_hour_df = seen_by_hour_df.reset_index().rename(
-        columns={"seen": "observables"}
-    )
+    seen_by_hour_df = seen_by_hour_df.reset_index()
     seen_by_hour_df["time"] = seen_by_hour_df["time"].map(
         lambda x: x.replace(tzinfo=None).timestamp()
     )
@@ -33,13 +31,15 @@ def observables_by_box_id(request, box_id=None):
     return JsonResponse(data, safe=False)
 
 
-def observables(request):
-    return observables_by_box_id(request, box_id=None)
+def aggregations(request):
+    return aggregations_by_box_id(request, box_id=None)
 
 
 def kpis_by_box_id(request, box_id):
     """
-    returns the kpis by box id
+    Returns the kpis by box id.
+    TODO: Rename observables to aggregations - or just remove it. Use "seen"
+    TODO: Rename busyness to sthg?
     """
     try:
         kpis = compute_kpis(box_id)

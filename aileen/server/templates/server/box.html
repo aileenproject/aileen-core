@@ -64,7 +64,7 @@
   <!-- Charts -->
     {% include "data/_charts.html" %}
     <script type="text/javascript">
-    const aileen_data = `{% url "data:devices_by_box_id" box_id %}`;
+    const aileen_data_url = `{% url "data:aggregations_by_box_id" box_id %}`;
     </script>
     <script src="{% static 'data/js/heatmapchart.js' %}"></script>
     <script src="{% static 'data/js/radialbarchart.js' %}"></script>

@@ -62,17 +62,17 @@ def post_events(request, box_id):
     For boxes to upload raw event data.
 
     Expects JSON data for observables and events, like this:
-    {"devices": [ ...], "events": [ ... ]}
+    {"observables": [ ...], "events": [ ... ]}
     """
 
     logger.info(f"Got event data for Box {box_id}")
 
     # deserialize
     observables = list(deserialize("json", request.POST.get("observables", "[]")))
-    logger.info(f"Received {len(devices)} devices.")
+    logger.info(f"Received {len(observables)} observables.")
     events = list(deserialize("json", request.POST.get("events", {})))
     logger.info(f"Received {len(events)} events.")
-    for device in devices:
+    for observable in observables:
         existing_observable = Observables.objects.filter(
             observable_id=observable.object.observable_id
         ).first()

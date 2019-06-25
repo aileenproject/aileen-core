@@ -28,7 +28,7 @@ def box(request, box_id):
     try:
         sensor_status = TmuxStatus.objects.filter(box_id=box_id).last().sensor_status
     except:
-        airodump_ng_status = "No statis available"
+        sensor_status = "No statis available"
 
     try:
         kpis = compute_kpis(box_id)
