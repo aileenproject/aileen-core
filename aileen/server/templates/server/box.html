@@ -97,10 +97,10 @@
     function onEachFeature(feature, layer) {
       var props = feature.properties;
 
-      var deviceURL = `/box/${props.box_id}`;
+      var boxURL = `/box/${props.box_id}`;
       var content = `<h3>${props.name}</h3>
-      <h5>Daily devices: ${props.average_devices_per_day}</h5>
-        <a href=${deviceURL}><p>Full Dashboard</p></a>`
+      <h5>Daily observables: ${props.average_observables_per_day}</h5>
+        <a href=${boxURL}><p>Full Dashboard</p></a>`
       layer.bindPopup(content);
     }
     // Download GeoJSON data with Ajax

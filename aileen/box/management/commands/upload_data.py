@@ -9,7 +9,12 @@ from django.core.serializers import serialize
 
 from box.models import BoxSettings
 from data.models import Events, SeenByDay, SeenByHour, TmuxStatus, Observables
-from data.time_utils import as_day, get_most_recent_hour, get_timezone, sleep_until_interval_is_complete
+from data.time_utils import (
+    as_day,
+    get_most_recent_hour,
+    get_timezone,
+    sleep_until_interval_is_complete,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +74,14 @@ def upload_latest_events():
 def upload_latest_aggregations():
     """Upload latest aggregations."""
     box_settings = BoxSettings.objects.first()
+    if box_settings.server_url is None or not box_settings.server_url.startswith(
+        "http"
+    ):
+        logger.error(
+            "Server address %s not given or should start with 'http'!"
+            % box_settings.server_url
+        )
+
     # build queries
     hour_query = SeenByHour.objects.filter(box_id=box_settings.box_id)
     day_query = SeenByDay.objects.filter(box_id=box_settings.box_id)
