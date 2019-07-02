@@ -38,30 +38,31 @@ def restart_sensor(tmux_session, sudo_pwd: str = None):
 def monitor_tmux_windows(tmux_session):
     """Monitor if tmux windows are doing fine. For now, only the sensor, can add others later."""
     box_id = BoxSettings.objects.last().box_id
-
-    tmux_window = tmux_session.find_where({"window_name": "sensor"})
-    tmux_pane = tmux_window.list_panes()[0]
-
-    last_message = tmux_pane.cmd("capture-pane", "-p").stdout[-1]
-
     timezone = pytz.timezone(settings.TIME_ZONE)
 
+    status = True  # start optimistic
+
+    tmux_window = tmux_session.find_where({"window_name": "sensor"})
+    if tmux_window is None:
+        status = False
+        logger.info(
+            "Cannot find the \"sensor\" tmux window. Assuming sensor is not running..."
+        )
+
+    tmux_pane = tmux_window.list_panes()[0]
+    last_message = tmux_pane.cmd("capture-pane", "-p").stdout[-1]
+
     if last_message == "sleeping a bit...":
+        status = False
         logger.info(
             "The sensor seems to be off (process is sleeping and will try again) ..."
         )
-        TmuxStatus.objects.update_or_create(
-            box_id=box_id,
-            airodump_ng=False,
-            time_stamp=timezone.localize(datetime.now()),
-        )
-    else:
-        logger.info("The sensor seems to be working properly ...")
-        TmuxStatus.objects.update_or_create(
-            box_id=box_id,
-            sensor_status=True,
-            time_stamp=timezone.localize(datetime.now()),
-        )
+
+    TmuxStatus.objects.update_or_create(
+        box_id=box_id,
+        sensor_status=status,
+        time_stamp=timezone.localize(datetime.now()),
+    )
 
 
 class Command(BaseCommand):

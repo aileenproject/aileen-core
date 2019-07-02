@@ -66,7 +66,7 @@ def unique_observables_per_bin_size(df: pd.DataFrame, bin_size: str) -> List:
     return data
 
 
-def number_of_times_iobservable_was_seen_per_bin_size(df: pd.DataFrame, bin_size: str):
+def number_of_times_observable_was_seen_per_bin_size(df: pd.DataFrame, bin_size: str):
     """
     takes in a dataframe containing one observable id and returns the following:
     [{'time_seen': '2018-11-16 08:00:00', 'number_of_times_observable_was_seen': 2},{...}]

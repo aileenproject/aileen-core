@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     "djgeojson",
     "corsheaders",
     "data",
-    "box",
 ]
 
 MIDDLEWARE = [
@@ -162,6 +161,8 @@ logging.config.dictConfig(aileen_logging_config)
 AILEEN_MODE = os.environ.get(
     "AILEEN_MODE", default="box"
 )  # can also be "server" or "both" (for dev purposes)
+if AILEEN_MODE in ("box", "both"):
+    INSTALLED_APPS.append("box")
 if AILEEN_MODE in ("server", "both"):
     INSTALLED_APPS.append("server")
 
@@ -171,7 +172,6 @@ if AILEEN_MODE in ("server", "both"):
 TERM_LBL = "[Aileen]"
 
 #  ---- Box Settings
-BOX_PORT = os.environ.get("BOX_PORT", default=80)
 
 # If you have installed aileen in a virtual env, the tmux session needs to know how to get that activated.
 ACTIVATE_VENV_CMD = os.environ.get("ACTIVATE_VENV_CMD", default="")
@@ -196,6 +196,11 @@ SENSOR_FILE_PREFIX = os.environ.get("SENSOR_FILE_PREFIX", "")
 SUDO_PWD_REQUIRED = os.environ.get("SUDO_PWD_REQUIRED", default="no") in TRUTH_STRINGS
 # You can also store the sudo password in this env variable for easier automation.
 SUDO_PWD = os.environ.get("SUDO_PWD", default="")
+
+box_port_default = 80
+if SUDO_PWD == "":
+    box_port_default = 5656
+BOX_PORT = os.environ.get("BOX_PORT", default=box_port_default)
 
 # Minimal signal power needed to record an event. Look out: values are negative and bigger is better.
 
