@@ -88,10 +88,11 @@ def update_database_with_new_and_updated_observables(sensor_events_df: pd.DataFr
                 last_event_value = last_event_df["value"]
             except:
                 pass
-            event_df["value"] = sensor.adjust_event_value(
+            event_df["value"], event_df["observations"] = sensor.adjust_event_value(
                 event_df["value"],
                 last_event_value,
                 event_df["observations"],
+                last_event_df["observations"],
                 observable,
             )
             return event_df
@@ -130,6 +131,15 @@ def sensor_data_to_db(tmp_path: str):
     while True:
         start_time = time.time()
         sensor_data_df = sensor.get_latest_reading_as_df(tmp_path)
+
+        # check if expected columns are given
+        for expected_column in ("observable_id", "time_seen", "value", "observations"):
+            if expected_column not in sensor_data_df.columns:
+                logger.error(
+                    f"The sensor module function 'get_latest_reading_as_df' did not return a dataframe"
+                    " with the column {expected_column}."
+                    " Instead, the dataframe only has these columns: {sensor_data_df.columns}."
+                )
 
         # hash observable IDs if wanted
         sensor_data_df["observable_id"] = sensor_data_df["observable_id"].map(

@@ -23,7 +23,7 @@ server, or periodic restarts would improve stability).
 logger = logging.getLogger(__name__)
 
 
-def restart_sensor(tmux_session, sudo_pwd: str = None):
+def restart_sensor(tmux_session):
     """Kill the tmux window running the sensor, delete all sensor files, and start fresh."""
     logger.info("Restarting sensor for long-term health and sanitary reasons ...")
     tmux_session.find_where({"window_name": "sensor"}).kill_window()
@@ -32,7 +32,7 @@ def restart_sensor(tmux_session, sudo_pwd: str = None):
         f for f in os.listdir(tmp_dir) if f.startswith(settings.SENSOR_FILE_PREFIX)
     ]:
         os.remove(f"{tmp_dir}/{sensor_file}")
-    start_sensor_in_tmux(tmux_session, sudo_pwd, new_window=True)
+    start_sensor_in_tmux(tmux_session, new_window=True)
 
 
 def monitor_tmux_windows(tmux_session):
@@ -46,7 +46,7 @@ def monitor_tmux_windows(tmux_session):
     if tmux_window is None:
         status = False
         logger.info(
-            "Cannot find the \"sensor\" tmux window. Assuming sensor is not running..."
+            'Cannot find the "sensor" tmux window. Assuming sensor is not running...'
         )
 
     tmux_pane = tmux_window.list_panes()[0]
@@ -66,15 +66,7 @@ def monitor_tmux_windows(tmux_session):
 
 
 class Command(BaseCommand):
-    def add_arguments(self, parser):
-        parser.add_argument(
-            "--sudo-pwd",
-            nargs="?",
-            type=str,
-            help="The sudo password, if necessary, to restart the sensor.",
-        )
-
-    def handle(self, *args, sudo_pwd=None, **kwargs):
+    def handle(self, *args, **kwargs):
         tmux_server = libtmux.Server()
         tmux_session = tmux_server.find_where(
             {"session_name": settings.TMUX_SESSION_NAME}
@@ -87,8 +79,6 @@ class Command(BaseCommand):
             "I will restart processes after %d status check(s)..." % restart_frequency
         )
         monitoring_count = 0
-        if sudo_pwd == "":
-            sudo_pwd = None
 
         while True:
             start_time = time.time()
@@ -100,7 +90,7 @@ class Command(BaseCommand):
             monitoring_count += 1
 
             if monitoring_count == restart_frequency:
-                restart_sensor(tmux_session, sudo_pwd)
+                restart_sensor(tmux_session)
                 monitoring_count = 0
 
             print()

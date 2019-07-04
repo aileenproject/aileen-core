@@ -192,15 +192,7 @@ SENSOR_MODULE = os.environ.get("SENSOR_MODULE", default="")
 # This can be used to find / clean up files produced by the sensor
 SENSOR_FILE_PREFIX = os.environ.get("SENSOR_FILE_PREFIX", "")
 
-# If starting your sensor needs sudo rights, set this to true.
-SUDO_PWD_REQUIRED = os.environ.get("SUDO_PWD_REQUIRED", default="no") in TRUTH_STRINGS
-# You can also store the sudo password in this env variable for easier automation.
-SUDO_PWD = os.environ.get("SUDO_PWD", default="")
-
-box_port_default = 80
-if SUDO_PWD == "":
-    box_port_default = 5656
-BOX_PORT = os.environ.get("BOX_PORT", default=box_port_default)
+BOX_PORT = os.environ.get("BOX_PORT", default=5656)
 
 # Minimal signal power needed to record an event. Look out: values are negative and bigger is better.
 
@@ -244,8 +236,5 @@ TMUX_SESSION_NAME = "aileen_tmux_session"
 # Name of temporary folder for sensor output
 TMP_DIR_NAME = "aileen_sensor_data"
 
-# Use this to debug specific observable IDs (e.g. for calibration)
-# This is a dict with labels of your choice as keys and observable IDs as values.
-DEBUG_OBSERVABLES = {}
 
 #  ---- Server Settings
