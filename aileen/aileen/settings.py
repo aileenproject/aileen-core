@@ -194,8 +194,6 @@ SENSOR_FILE_PREFIX = os.environ.get("SENSOR_FILE_PREFIX", "")
 
 BOX_PORT = os.environ.get("BOX_PORT", default=5656)
 
-# Minimal signal power needed to record an event. Look out: values are negative and bigger is better.
-
 SENSOR_LOG_INTERVAL_IN_SECONDS = int(
     os.environ.get("SENSOR_LOG_INTERVAL_IN_SECONDS", default=5)
 )
