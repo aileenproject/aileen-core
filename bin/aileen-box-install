@@ -1,16 +1,29 @@
 #!/bin/bash
 #
-# Script for configuring the software for the aileen server
-# Using Ubuntu 18.04 LTS Desktop
+# Script for configuring a computer as an Aileeen box.
+# Will result in the `aileen` service being availabe (to start and stop).
+# Debian-specific.
+# Tested using Ubuntu 18.04 LTS Desktop
 #
 # Helpful link we used for service composition:
 # https://stackoverflow.com/questions/51025312/start-a-python-script-at-startup-automatically
+#
+# TODO:
+# * It needs a way for the user to pass in location and unix username as parameters?
+# * We actually don't need the AILEEN_SCRIPT_LOCATION if we call start and stop via the build-in scripts
+#   that are installed via setup.py (aileen-box-start, aileen-box-stop)
+# * This script could also do the `pip3 install -r requirements.txt` step (or `python3 setup.py develop`)
+#   Maybe that should be an option, as the usual workflow might be tp pip install aileen-core anyways.
 
-# Info for hotspot
+
+# Info on which unix user and script location is to be used
+AILEEN_USER=aileen
+AILEEN_SCRIPT_LOCATION=/home/aileen/Desktop/aileen
+
+# Info for the local hotspot
 SSID=aileen
 WPA_PASSWORD=Aileen-wifi
-# Info for script location
-AILEEN_SCRIPT_LOCATION=/home/aileen/Desktop/aileen
+
 
 sudo apt-get update
 sudo apt-get upgrade -y
@@ -42,13 +55,13 @@ psudo() { sudo env PATH="$PATH" "$@"; }
 
 # install and configure postgresql
 # sudo apt-get install postgresql postgresql-contrib -y
-# TODO
+# TODO we're using sqlite for now
 
 # install zsh because it's just nice
 sudo apt install zsh
 chsh -s $(which zsh)
 
-# give aileen access to the tmp directory this is necessary for service
+# give aileen access to the tmp directory - this is necessary for service
 sudo chmod 755 /tmp/
 
 # Create service scripts for aileen box
@@ -69,10 +82,10 @@ Description=Run aileen box
 
 [Service]
 Type=forking
-User=aileen
+User='${AILEEN_USER}'
 ExecStart=/bin/bash -c '${AILEEN_SCRIPT_LOCATION}/start_aileen.sh'
 ExecStop=/bin/bash -c '${AILEEN_SCRIPT_LOCATION}/stop_aileen.sh'
-WorkingDirectory=/home/aileen
+WorkingDirectory=/home/'${AILEEN_USER}'
 
 [Install]
 WantedBy=multi-user.target" > /etc/systemd/system/aileen.service
@@ -81,8 +94,9 @@ chmod 775 ${AILEEN_SCRIPT_LOCATION}/start_aileen.sh
 chmod 755 ${AILEEN_SCRIPT_LOCATION}/stop_aileen.sh
 
 # TODO: Test this. It also is recommended not to call service scripts but to use direct commands
-#       (see https://stackoverflow.com/a/46572318). If we use the Django location as WorkingDirectory,
-#       we should be able to do that just fine and call manage.py directly.
+#       (see https://stackoverflow.com/a/46572318). If we use the AILEEN_SCRIPT_LOCATION
+#       (where Django code is) as WorkingDirectory, we should be able to do that just fine
+#       and call python3 manage.py directly.
 
 # enable aileen box services
 sudo systemctl daemon-reload

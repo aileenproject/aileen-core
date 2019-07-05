@@ -50,7 +50,7 @@ function radialBarChart(options) {
   let selectedDayDate;
   let selectedDayFilter = "All days";
   let dateRangeFilteredData;
-  let dayMaxDevices;
+  let dayMaxseen;
 
   // Dimension
   const controlHeight = 60;
@@ -264,13 +264,13 @@ function radialBarChart(options) {
       return `rotate(${(angle * 180) / Math.PI + 90})`;
     });
 
-  // Total devices axis title
+  // Total seen axis title
   gAxisLabels
     .append("text")
     .attr("class", "radius-axis-title")
     .attr("y", -outerRadius - 3)
     .attr("text-anchor", "middle")
-    .text("Total Number of Devices Seen");
+    .text("Total observations");
 
   // Invisible wedges
   gInvisibleWedges
@@ -334,7 +334,7 @@ function radialBarChart(options) {
           seriesData = data.slice(startIndex, endIndex).map(d => {
             return {
               hour: d.hour,
-              devices: d.devices
+              seen: d.seen
             };
           });
         } else {
@@ -355,21 +355,21 @@ function radialBarChart(options) {
           .nest()
           .key(d => d.hour)
           .rollup(leaves => {
-            const sum = d3.sum(leaves, leaf => leaf.devices);
-            const count = leaves.filter(leaf => leaf.devices !== 0).length;
+            const sum = d3.sum(leaves, leaf => leaf.seen);
+            const count = leaves.filter(leaf => leaf.seen !== 0).length;
             return sum / count;
           })
           .entries(dayFilteredData)
           .map(d => ({
             hour: parseInt(d.key),
-            devices: d.value
+            seen: d.value
           }));
         break;
     }
     if (seriesData.length > 0) {
       radiusScale.domain([
         0,
-        Math.max(d3.max(seriesData, d => d.devices), radiusScale.domain()[1])
+        Math.max(d3.max(seriesData, d => d.seen), radiusScale.domain()[1])
       ]);
     } else {
       radiusScale.domain([
@@ -380,7 +380,7 @@ function radialBarChart(options) {
             .select(`.average-wedges`)
             .selectAll(".wedge")
             .data(),
-            d => d.devices
+            d => d.seen
           )
         )
       ]);
@@ -489,18 +489,18 @@ function radialBarChart(options) {
           })
           .merge(wedge)
           .attr("stroke", d =>
-            d.devices === dayMaxDevices && currentSeries === "day" ?
+            d.seen === dayMaxseen && currentSeries === "day" ?
             maxWedgeStrokeColor :
             "none"
           )
           .transition()
           .duration(500)
           .attrTween("d", function (d) {
-            const newOuterRadius = radiusScale(d.devices);
+            const newOuterRadius = radiusScale(d.seen);
             return arcTween.call(this, newOuterRadius);
           })
           .on("end", function (d) {
-            outerRadiuses.set(this, radiusScale(d.devices));
+            outerRadiuses.set(this, radiusScale(d.seen));
           });
 
         wedge
@@ -515,18 +515,18 @@ function radialBarChart(options) {
         g.select(`.${currentSeries}-wedges`)
           .selectAll(".wedge")
           .attr("stroke", d =>
-            d.devices === dayMaxDevices && currentSeries === "day" ?
+            d.seen === dayMaxseen && currentSeries === "day" ?
             maxWedgeStrokeColor :
             "none"
           )
           .transition()
           .duration(500)
           .attrTween("d", function (d) {
-            const newOuterRadius = radiusScale(d.devices);
+            const newOuterRadius = radiusScale(d.seen);
             return arcTween.call(this, newOuterRadius);
           })
           .on("end", function (d) {
-            outerRadiuses.set(this, radiusScale(d.devices));
+            outerRadiuses.set(this, radiusScale(d.seen));
           });
       }
     });
@@ -585,7 +585,7 @@ function radialBarChart(options) {
   averageText
     .append("tspan")
     .attr("x", legendCircleRadius * 2 + 3)
-    .text("Average Number of Devices");
+    .text("Average observations");
   const averageTextVariableRow = averageText
     .append("tspan")
     .attr("x", legendCircleRadius * 2 + 3)
@@ -607,7 +607,7 @@ function radialBarChart(options) {
       dayText
         .append("tspan")
         .attr("x", legendCircleRadius * 2 + 3)
-        .text("Total Unique Devices Seen");
+        .text("Total observations");
       dayText
         .append("tspan")
         .attr("x", legendCircleRadius * 2 + 3)
@@ -627,7 +627,7 @@ function radialBarChart(options) {
     d = parseInt(d);
     let html = `
       <div>${d}:00 - ${d}:59</div>
-      <div>Total Devices </div>
+      <div>Total seen </div>
     `;
     series.forEach(series => {
       const seriesData = g
@@ -642,10 +642,10 @@ function radialBarChart(options) {
       )}"></div>`;
       const count =
         series === "average" ?
-        hourData.devices === 0 ?
+        hourData.seen === 0 ?
         0 :
-        d3.format(".1f")(hourData.devices) :
-        hourData.devices;
+        d3.format(".1f")(hourData.seen) :
+        hourData.seen;
       html += `<div>${circle} ${count}</div>`;
     });
     tooltip.html(html);
@@ -769,7 +769,7 @@ function radialBarChart(options) {
             angleScale(d.hour.toString()) +
             series.indexOf(seriesToUpdate) * angleOffset;
           const endAngle = startAngle + angleOffset;
-          const outerRadius = radiusScale(d.devices);
+          const outerRadius = radiusScale(d.seen);
           const arc = arcs.set(
             this,
             d3
@@ -779,7 +779,7 @@ function radialBarChart(options) {
             .startAngle(startAngle)
             .endAngle(endAngle)
           );
-          outerRadiuses.set(this, radiusScale(d.devices));
+          outerRadiuses.set(this, radiusScale(d.seen));
           return arc();
         });
     });
@@ -800,9 +800,9 @@ function radialBarChart(options) {
   ////////////////////////////////////////////////////////////
   //// Exported Chart Methods ////////////////////////////////
   ////////////////////////////////////////////////////////////
-  chart.updateDayBars = function (date, maxDevices) {
+  chart.updateDayBars = function (date, maxseen) {
     selectedDayDate = date ? date : undefined;
-    dayMaxDevices = maxDevices;
+    dayMaxseen = maxseen;
     updateRadialBar("day");
     updateLegendDayText();
   };

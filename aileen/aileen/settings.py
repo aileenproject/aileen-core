@@ -162,7 +162,7 @@ AILEEN_MODE = os.environ.get(
     "AILEEN_MODE", default="box"
 )  # can also be "server" or "both" (for dev purposes)
 if AILEEN_MODE in ("box", "both"):
-    INSTALLED_APPS.extend(("box", "calibration"))
+    INSTALLED_APPS.append("box")
 if AILEEN_MODE in ("server", "both"):
     INSTALLED_APPS.append("server")
 
@@ -172,18 +172,7 @@ if AILEEN_MODE in ("server", "both"):
 TERM_LBL = "[Aileen]"
 
 #  ---- Box Settings
-BOX_PORT = os.environ.get("BOX_PORT", default=80)
-# The wifi interface names on which your device might sit.
-# Factory identifier and maybe the one airmon uses after it ran. Use a comma-separated list for more than one.
-WIFI_INTERFACES = os.environ.get("WIFI_INTERFACES", default="wlan1")
-FULL_PATH_TO_AIRMON_NG = os.environ.get("FULL_PATH_TO_AIRMON_NG", default="airmon-ng")
-FULL_PATH_TO_AIRODUMP = os.environ.get("FULL_PATH_TO_AIRODUMP", default="airodump-ng")
-# This interval is how frequently we log monitored devices to file
-AIRODUMP_LOG_INTERVAL_IN_SECONDS = int(
-    os.environ.get("AIRODUMP_LOG_INTERVAL_IN_SECONDS", default=5)
-)
-# You can store the sudo password here if you need to automate starting the airocrack tools.
-SUDO_PWD = os.environ.get("SUDO_PWD", default="")
+
 # If you have installed aileen in a virtual env, the tmux session needs to know how to get that activated.
 ACTIVATE_VENV_CMD = os.environ.get("ACTIVATE_VENV_CMD", default="")
 ACTIVATE_VENV_CMD = (
@@ -192,6 +181,22 @@ ACTIVATE_VENV_CMD = (
     else ACTIVATE_VENV_CMD
 )
 
+# Required: Specify which importable module contains the functions
+#           used by Aileen (start_sensing, latest_reading_as_df, check_preconditions).
+#           Make sure it is known to the Python interpreter, so e.g. you could:
+#
+#           export SENSOR_MODULE=aileen_sensing_api
+#           export PYTHONPATH=$PYTHONPATH./path/to/sen
+SENSOR_MODULE = os.environ.get("SENSOR_MODULE", default="")
+
+# This can be used to find / clean up files produced by the sensor
+SENSOR_FILE_PREFIX = os.environ.get("SENSOR_FILE_PREFIX", "")
+
+BOX_PORT = os.environ.get("BOX_PORT", default=5656)
+
+SENSOR_LOG_INTERVAL_IN_SECONDS = int(
+    os.environ.get("SENSOR_LOG_INTERVAL_IN_SECONDS", default=5)
+)
 UPLOAD_INTERVAL_IN_SECONDS = int(
     os.environ.get("UPLOAD_INTERVAL_IN_SECONDS", default=60)
 )
@@ -213,9 +218,9 @@ if PROCESS_RESTART_INTERVAL_IN_SECONDS % STATUS_MONITORING_INTERVAL_IN_SECONDS !
     )
     sys.exit(2)
 
-# whether to hash mac addresses, defaults true
-HASH_MAC_ADDRESSES = (
-    os.environ.get("HASH_MAC_ADDRESSES", default="True") in TRUTH_STRINGS
+# whether to hash observable IDs, defaults true
+HASH_OBSERVABLE_IDS = (
+    os.environ.get("HASH_OBSERVABLE_IDS", default="False") in TRUTH_STRINGS
 )
 HASH_ITERATIONS = int(
     os.environ.get("HASH_ITERATIONS", default=500_000)
@@ -226,13 +231,8 @@ UPLOAD_EVENTS = os.environ.get("UPLOAD_EVENTS", default="False") in TRUTH_STRING
 
 # For tmux sessions and writing info to DB
 TMUX_SESSION_NAME = "aileen_tmux_session"
-# Name of temporary folder for airodump output
-TMP_DIR_NAME = "aileen_device_detection_data"
-# Use this as file prefix when airodump runs
-AIRODUMP_FILE_PREFIX = "full_airodump_file"
+# Name of temporary folder for sensor output
+TMP_DIR_NAME = "aileen_sensor_data"
 
-# Use this to debug specific MAC addresses (e.g. for calibration which min_power value to choose)
-# This is a dict with labels of your choice as keys and mac addresses as values.
-DEBUG_DEVICES = {}
 
 #  ---- Server Settings

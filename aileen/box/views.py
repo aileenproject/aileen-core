@@ -16,11 +16,11 @@ def dashboard(request):
 
     kpis = compute_kpis(box_id)
     # customise the kpis
-    kpis["busyness"]["by_hour"]["num_devices"] = int(
-        kpis["busyness"]["by_hour"]["num_devices"]
+    kpis["busyness"]["by_hour"]["num_observables"] = int(
+        kpis["busyness"]["by_hour"]["num_observables"]
     )
-    kpis["busyness"]["by_day"]["num_devices"] = int(
-        kpis["busyness"]["by_day"]["num_devices"]
+    kpis["busyness"]["by_day"]["num_observables"] = int(
+        kpis["busyness"]["by_day"]["num_observables"]
     )
 
     context = {"kpis": kpis, "airodump_ng_status": airodump_ng_status}

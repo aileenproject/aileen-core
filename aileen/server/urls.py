@@ -24,7 +24,7 @@ urlpatterns = [
         r"^data.geojson$",
         GeoJSONLayerView.as_view(
             model=models.AileenBox,
-            properties=("name", "box_id", "geom", "average_devices_per_day"),
+            properties=("name", "box_id", "geom", "average_observables_per_day"),
         ),
         name="aileen_box_location",
     ),
@@ -33,9 +33,9 @@ urlpatterns = [
     #                                    API
     # ------------------------------------------------------------------------------
     url(
-        r"^api/average_number_of_devices_seen_by_box",
-        api.average_number_of_devices_seen_by_box,
-        name="average_number_of_devices_seen_by_box",
+        r"^api/average_number_of_observables_seen_by_box",
+        api.average_number_of_observables_seen_by_box,
+        name="average_number_of_observables_seen_by_box",
     ),
     url(r"^api/postEvents/(?P<box_id>[^/]+)/", api.post_events, name="postEvents"),
     url(

@@ -1,11 +1,7 @@
 # Aileen
 
-Aileen, a hardware/software suite designed for NGOs, counts signals from devices with a wireless interface enabled (such as smartphones) to deliver population data in an organized and actionable format.
+Aileen is a sensor data aggregation tool. It can be used for any numerical sensor data, is robust and privacy-friendly.
 
-## Hardware
-
-- ALFA AWUS036NH HIGH POWER WIFI USB-ADAPTER
-- Computer running Ubuntu 18.04 LTS
 
 ## Dependencies
 
@@ -15,6 +11,20 @@ Aileen, a hardware/software suite designed for NGOs, counts signals from devices
   `python setup.py develop`
 - If you want to collaborate on code, please install pre-commit for it to hook into commits:
   `pre-commit install`
+
+
+## Sensor module
+
+To run the aileen box you'll need a module implementing three functions:
+
+* start_sensing(tmp_path: str)
+* get_latest_reading_as_df(tmp_path: str)
+
+In addition, you can implement these additional functions:
+
+* check_preconditions()
+* adjust_event_value(event_value: float, last_event_value: float, observations: dict, observable: Observable)
+
 
 ## Database for development
 
@@ -30,11 +40,10 @@ Use sqlite
 To run the aileen box you'll need to have the following in an `aileen/.env` file.
 
 ```
-WIFI_INTERFACES='theWifiInterfaceOfDevice'
-DISABLE_AUTO_TITLE='true'
+SENSOR_MODULE=sensor
+PYTHONPATH=$PYTHONPATH./your/path/to/sensor-module
+BOX_PORT=<some number>
 ```
-
-Aileen will tell you about the wifi interfaces it sees if you don't know what to put for the first setting.
 
 
 ## First migrations and superuser

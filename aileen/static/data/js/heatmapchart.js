@@ -21,7 +21,7 @@ function heatmapChart(options) {
   let freezedDay;
   let xAxisMinDate;
   let xAxisMaxDate;
-  let maxDevices;
+  let maxSeen;
 
   const allDates = enumerateDaysBetweenDates(
     data[0].date.clone(),
@@ -62,10 +62,10 @@ function heatmapChart(options) {
   const max_times_seen = Math.max.apply(
     Math,
     data.map(function (o) {
-      return o.devices;
+      return o.seen;
     })
   );
-  const colorScaleMaxDevices = Math.max(max_times_seen * 0.8, 100);
+  const colorScaleMaxseen = Math.max(max_times_seen * 0.8, 100);
   const cellStrokeColor = "#fff";
   const maxCellStrokeColor = "#FF0000";
   const maxCellStrokeWidth = 2;
@@ -157,7 +157,7 @@ function heatmapChart(options) {
     .padding(0.5);
   const colorScale = d3
     .scaleLinear()
-    .domain(colorStops.map(d => d * colorScaleMaxDevices))
+    .domain(colorStops.map(d => d * colorScaleMaxseen))
     .range(colors)
     .interpolate(colorInterpolator);
 
@@ -363,7 +363,7 @@ function heatmapChart(options) {
       .attr("width", cellSize)
       .attr("height", 0)
       .attr("stroke", cellStrokeColor)
-      .attr("fill", d => colorScale(d.devices))
+      .attr("fill", d => colorScale(d.seen))
       .on("mouseover", d => {
         if (d3.event.buttons === 1) return; // Zoom/pan
         gFocusRect
@@ -385,7 +385,7 @@ function heatmapChart(options) {
             new CustomEvent("heatmap-date-change", {
               detail: {
                 heatmapDate: d.date.clone(),
-                maxDevices: maxDevices
+                maxSeen: maxSeen
               }
             })
           );
@@ -427,7 +427,7 @@ function heatmapChart(options) {
             new CustomEvent("heatmap-date-change", {
               detail: {
                 heatmapDate: d.date.clone(),
-                maxDevices: maxDevices
+                maxSeen: maxSeen
               }
             })
           );
@@ -442,7 +442,7 @@ function heatmapChart(options) {
       .attr("y", d => yScale(d.hour) - cellSize / 2)
       .attr("height", cellSize);
 
-    const zeroCell = cell.filter(d => d.devices === 0);
+    const zeroCell = cell.filter(d => d.seen === 0);
     zeroCell
       .append("line")
       .style("pointer-events", "none")
@@ -500,7 +500,7 @@ function heatmapChart(options) {
       );
 
     visibleCells
-      .filter(d => d.devices === maxDevices)
+      .filter(d => d.seen === maxSeen)
       .select("rect")
       .attr("stroke", cellStrokeColor)
       .attr("stroke-width", 1);
@@ -511,10 +511,10 @@ function heatmapChart(options) {
       d.date.isSameOrBefore(xAxisMaxDate)
     );
 
-    maxDevices = d3.max(innerVisibleCells.data(), d => d.devices);
+    maxSeen = d3.max(innerVisibleCells.data(), d => d.seen);
 
     const maxCell = innerVisibleCells
-      .filter(d => d.devices === maxDevices)
+      .filter(d => d.seen === maxSeen)
       .raise();
     maxCell
       .select("rect")
@@ -573,7 +573,7 @@ function heatmapChart(options) {
 
   const legendScale = d3
     .scaleLinear()
-    .domain([0, colorScaleMaxDevices])
+    .domain([0, colorScaleMaxseen])
     .range([0, heatmapHeight]);
 
   const legendAxis = d3
@@ -581,7 +581,7 @@ function heatmapChart(options) {
     .ticks(heatmapWidth / 60)
     .tickSize(0)
     .tickFormat(d =>
-      d === colorScaleMaxDevices ?
+      d === colorScaleMaxseen ?
       "≥" + locale.format(",")(d) :
       locale.format(",")(d)
     );
@@ -598,7 +598,7 @@ function heatmapChart(options) {
     .attr("x", 0)
     .attr("y", -legendStripSize - 3)
     .attr("transform", `rotate(-90)`)
-    .text("Total Number of Devices");
+    .text("Total observations");
 
   const gLegendAddition = g.append("g").attr("class", "legend-addition");
   let endPosition = 0;
@@ -606,7 +606,7 @@ function heatmapChart(options) {
     .append("rect")
     .attr("width", legendStripSize)
     .attr("height", legendStripSize)
-    .attr("fill", colorScale(colorScaleMaxDevices))
+    .attr("fill", colorScale(colorScaleMaxseen))
     .attr("stroke", maxCellStrokeColor)
     .attr("stroke-width", maxCellStrokeWidth)
     .each(function () {
@@ -617,7 +617,7 @@ function heatmapChart(options) {
     .attr("x", endPosition + 4)
     .attr("y", legendStripSize / 2)
     .attr("dy", "0.35em")
-    .text("Max Number of Devices")
+    .text("Max observation")
     .each(function () {
       endPosition += this.getBBox().width + 4;
     });
@@ -701,8 +701,8 @@ function heatmapChart(options) {
     const html = `
     <div>${dayOfTheWeek} ${date}</div>
     <div>${hourStart} - ${hourEnd}</div>
-    <div>Total Devices</div>
-    <div><b>${d.devices}</b></div>
+    <div>Total seen</div>
+    <div><b>${d.seen}</b></div>
   `;
     tooltip.html(html);
     tooltip.box = tooltip.node().getBoundingClientRect();
@@ -808,7 +808,7 @@ function heatmapChart(options) {
       .attr("width", cellSize)
       .attr("height", cellSize);
 
-    const zeroCell = cell.filter(d => d.devices === 0);
+    const zeroCell = cell.filter(d => d.seen === 0);
     zeroCell
       .select(".zero-cell-line-1")
       .attr("x1", d => xScale(d.date) - cellSize / 2)

@@ -3,14 +3,18 @@ from datetime import datetime
 import pandas as pd
 from django.db import models
 
+# we get generic json support from a third-party lib,
+# even though native support would be given - but for pg/mysql only.
+from jsonfield import JSONField
 from django_pandas.managers import DataFrameManager
+
 
 """ Data models shared between boxes and servers. This is the core data we are collecting."""
 
 
-class UniqueDevices(models.Model):
+class Observables(models.Model):
 
-    device_id = models.CharField(
+    observable_id = models.CharField(
         max_length=100, primary_key=True, db_index=True, unique=True
     )
     time_last_seen = models.DateTimeField()
@@ -19,48 +23,49 @@ class UniqueDevices(models.Model):
     pdobjects = DataFrameManager()
 
     def __str__(self):
-        return str(self.device_id)
+        return str(self.observable_id)
 
     def __repr__(self):
-        return "<Device [%s]; last seen: %s>" % (self.device_id, self.time_last_seen)
+        return "<Observable [%s]; last seen: %s>" % (
+            self.observable_id,
+            self.time_last_seen,
+        )
 
     @staticmethod
-    def find_device_by_id(device_id: str):
-        return UniqueDevices.objects.filter(device_id=device_id).first()
+    def find_observable_by_id(observable_id: str):
+        return Observables.objects.filter(observable_id=observable_id).first()
 
     @staticmethod
     def save_from_df(df: pd.DataFrame) -> int:
-        """Save devices in the df to the database. Return how many were newly created."""
+        """Save observables in the df to the database. Return how many were newly created."""
         created = 0
-        for device in df.reset_index(level=0).to_dict("records"):
-            device_id = device["device_id"]
-            device.pop("device_id")
-            unique_device, was_created = UniqueDevices.objects.update_or_create(
-                device_id=device_id, defaults=dict(**device)
+        for observable in df.reset_index(level=0).to_dict("records"):
+            observable_id = observable["observable_id"]
+            observable.pop("observable_id")
+            observable, was_created = Observables.objects.update_or_create(
+                observable_id=observable_id, defaults=dict(**observable)
             )
             if was_created:
                 created += 1
-                unique_device.time_first_seen = unique_device.time_last_seen
+                observable.time_first_seen = observable.time_last_seen
         return created
 
     @staticmethod
     def to_df():
-        return UniqueDevices.pdobjects.all().to_dataframe(index="device_id")
+        return Observables.pdobjects.all().to_dataframe(index="observable_id")
 
 
-class DevicesEvents(models.Model):
+class Events(models.Model):
 
     box_id = models.CharField(max_length=256)
-    # refers to BoxSettings or AileenBox, depending on whether we're on a box or on a server
-    device = models.ForeignKey(UniqueDevices, null=False, on_delete=models.CASCADE)
-    device_power = models.IntegerField()
     time_seen = models.DateTimeField()
-    access_point_id = models.CharField(max_length=100)
-    total_packets = models.IntegerField()
-    packets_captured = models.IntegerField()
+    # refers to BoxSettings or AileenBox, depending on whether we're on a box or on a server
+    observable = models.ForeignKey(Observables, null=False, on_delete=models.CASCADE)
+    value = models.FloatField(default=0)
+    observations = JSONField()
 
     class Meta:
-        unique_together = (("device", "time_seen"),)
+        unique_together = (("observable", "time_seen"),)
 
     objects = models.Manager()
     pdobjects = DataFrameManager()
@@ -69,66 +74,49 @@ class DevicesEvents(models.Model):
         return str(self)
 
     def __str__(self):
-        return "DeviceEvent<%d> device:<%s> time seen: %s" % (
-            self.id,
-            self.device,
-            self.time_seen,
+        return (
+            "Event<%d> observable:<%s> time seen: %s, value: %.4f, observations: %s"
+            % (self.id, self.observable, self.time_seen, self.value, self.observations)
         )
 
     @staticmethod
-    def save_from_df(event_df: pd.DataFrame, box_id: str) -> int:
-        """Save device events in the df to the database. Return how many were newly created.
-            TODO: move to box app
+    def save_from_df(events_df: pd.DataFrame, box_id: str) -> int:
+        """Save events in the df to the database. Return how many were newly created.
         """
         created = 0
         if box_id is None or box_id == "":
             raise Exception("No Box ID given.")
-        for device_event in event_df.reset_index(level=0).to_dict("records"):
-            device_event["box_id"] = box_id
+        for event in events_df.reset_index(level=0).to_dict("records"):
+            event["box_id"] = box_id
 
-            device: UniqueDevices = UniqueDevices.find_device_by_id(
-                device_event["device_id"]
-            )
+            observable_id = event.pop("observable_id")
+            if "time_seen" not in event:
+                raise Exception("time_seen missing in the event data.")
+            time_seen = event["time_seen"]
+            if "value" not in event:
+                raise Exception("value missing in the event data.")
+            value = event["value"]
+            observations = event["observations"]
 
-            new_total_packets = int(device_event["total_packets"])
-            # use a try except block in case the device does not yet exist
-            try:
-                last_total_packets = int(
-                    DevicesEvents.find_device_by_id(device).iloc[-1].total_packets
-                )
-                # we need some way to determine the amount of packets that were captured
-                # there is a possibility that the airodump-ng csv file had to restart
-                # therefor we need to check if this is a continuation of the airodump csv or if it is new
-                if last_total_packets < new_total_packets:
-                    packets_captured = new_total_packets - last_total_packets
-                else:
-                    # a device exists but airomon restarted
-                    packets_captured = new_total_packets
-            except:
-                # it is the 1st time a device was seen
-                packets_captured = new_total_packets
-
-            device_event.pop("device_id")
-            time_seen = device_event["time_seen"]
-
-            device_event.pop("time_seen")
-            _, was_created = DevicesEvents.objects.update_or_create(
-                device_id=device,
+            event.pop("time_seen")
+            _, was_created = Events.objects.update_or_create(
+                observable_id=observable_id,
                 time_seen=time_seen,
-                packets_captured=packets_captured,
-                defaults=dict(**device_event),
+                value=value,
+                observations=observations,
+                defaults=dict(**event),
             )
             if was_created:
                 created += 1
         return created
 
     @staticmethod
-    def find_device_by_id(device_id: str):
-        return DevicesEvents.pdobjects.filter(device_id=device_id).to_dataframe()
+    def find_by_observable_id(observable_id: str) -> pd.DataFrame:
+        return Events.pdobjects.filter(observable_id=observable_id).to_dataframe()
 
     @staticmethod
-    def find_box_by_id(box_id: str):
-        return DevicesEvents.pdobjects.filter(box_id=box_id).to_dataframe()
+    def find_by_box_id(box_id: str) -> pd.DataFrame:
+        return Events.pdobjects.filter(box_id=box_id).to_dataframe()
 
 
 class SeenByHour(models.Model):
@@ -160,6 +148,9 @@ class SeenByDay(models.Model):
     objects = models.Manager()
     pdobjects = DataFrameManager()
 
+    class Meta:
+        unique_together = (("box_id", "day_start"),)
+
     def __str__(self):
         return (
             f"<SeenByDay for {self.day_start}: {self.seen}, {self.seen_also_on_preceding_day},"
@@ -174,10 +165,10 @@ class TmuxStatus(models.Model):
     """Status of the Tmux session"""
 
     box_id = models.CharField(max_length=256)
-    airodump_ng = models.BooleanField()
+    sensor_status = models.BooleanField()
     time_stamp = models.DateTimeField()
 
     objects = models.Manager()
 
     def __str__(self):
-        return f"Box={self.box_id} time={self.time_stamp} airodump status={self.airodump_ng}"
+        return f"Box={self.box_id} time={self.time_stamp} sensor status={self.sensor_status}"

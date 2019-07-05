@@ -16,7 +16,7 @@
           <div class="col-md-6 aileen-button text-center">
         <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button infoButton"
                     data-toggle="tooltip"
-                    title="On average, {{kpis.busyness.by_hour.num_devices}} are seen during this time period, which is {{kpis.busyness.by_hour.percentage_margin_to_mean | floatformat:"0"}}% more than the hourly average of {{ kpis.busyness.by_hour.num_devices_mean | floatformat:"0" }} devices.">
+                    title="On average, {{kpis.busyness.by_hour.num_observables}} Observables are seen during this time period, which is {{kpis.busyness.by_hour.percentage_margin_to_mean | floatformat:"0"}}% more than the hourly average of {{ kpis.busyness.by_hour.num_observables_mean | floatformat:"0" }} observables.">
                     + {{kpis.busyness.by_hour.percentage_margin_to_mean | floatformat:"0"}}%
             </button>
           </div>
@@ -40,7 +40,7 @@
           <div class="col-md-6 aileen-button text-center">
             <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button infoButton"
                     data-toggle="tooltip"
-                    title="{{ kpis.busyness.by_day.weekday}}s see a {{kpis.busyness.by_day.percentage_margin_to_mean | floatformat:"0"}}% growth in traffic. The average number of devices on {{ kpis.busyness.by_day.weekday}} is {{ kpis.busyness.by_day.num_devices | intcomma }}, compared with an overall daily average of {{ kpis.busyness.by_day.num_devices_mean  | floatformat:"0" }} devices.">
+                    title="{{ kpis.busyness.by_day.weekday}}s see a {{kpis.busyness.by_day.percentage_margin_to_mean | floatformat:"0"}}% growth in traffic. The average number of observables on {{ kpis.busyness.by_day.weekday}} is {{ kpis.busyness.by_day.num_observables | intcomma }}, compared with an overall daily average of {{ kpis.busyness.by_day.num_observables_mean  | floatformat:"0" }} observables.">
                     + {{kpis.busyness.by_day.percentage_margin_to_mean | floatformat:"0"}}%
             </button>
           </div>
@@ -57,21 +57,21 @@
           <div class="col-md-6 aileen-button text-center">
             <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button infoButton"
                     data-toggle="tooltip"
-                    title="In any given hour, {{ kpis.stasis.by_hour | floatformat:"0" }} percent of devices are already present for at least an hour (they were also seen during the preceding hour)." >
+                    title="In any given hour, {{ kpis.stasis.by_hour | floatformat:"0" }} percent of observables are already present for at least an hour (they were also seen during the preceding hour)." >
               &#8805; 1 Hour : {{ kpis.stasis.by_hour | floatformat:"0" }}%
             </button>
           </div>
           <div class="col-md-6 aileen-button text-center">
             <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button infoButton"
                     data-toggle="tooltip"
-                    title="On any given day, {{ kpis.stasis.by_day | floatformat:"0" }} percent of devices are already present for at least one day (they were also seen during the preceding day)." >
+                    title="On any given day, {{ kpis.stasis.by_day | floatformat:"0" }} percent of observables are already present for at least one day (they were also seen during the preceding day)." >
               &#8805; 1 Day : {{ kpis.stasis.by_day | floatformat:"0" }}%
             </button>
           </div>
       <!--    <div class="col-md-4 aileen-button text-center">
             <button class="btn btn-block btn-outline-primary my-2 my-sm-0 aileen-button infoButton"
                     data-toggle="tooltip"
-                    title="On any given day, {{ kpis.stasis.by_week | floatformat:"0" }} percent of devices are likely to be already present for at least one week (they were also seen during the day one week earlier)." >
+                    title="On any given day, {{ kpis.stasis.by_week | floatformat:"0" }} percent of observables are likely to be already present for at least one week (they were also seen during the day one week earlier)." >
             &#8805; 1 Week : {{ kpis.stasis.by_week | floatformat:"0" }}%
             </button>
           </div> -->

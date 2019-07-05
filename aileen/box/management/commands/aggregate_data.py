@@ -10,8 +10,13 @@ from django.db import transaction
 
 from box.models import BoxSettings
 from data.models import SeenByDay, SeenByHour, TmuxStatus
-from data.queries import get_unique_device_ids_seen
-from data.time_utils import as_day, as_hour, get_most_recent_hour, sleep_until_interval_is_complete
+from data.queries import get_unique_observable_ids_seen
+from data.time_utils import (
+    as_day,
+    as_hour,
+    get_most_recent_hour,
+    sleep_until_interval_is_complete,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -20,20 +25,20 @@ def aggregate_hour(hour_start: datetime) -> SeenByHour:
     """Aggregate hourly seen events for the hour starting at the passed time."""
     box_settings = BoxSettings.objects.first()
 
-    unique_device_ids_this_hour = get_unique_device_ids_seen(
+    unique_observable_ids_this_hour = get_unique_observable_ids_seen(
         box_id=box_settings.box_id,
         start_time=hour_start,
         end_time=hour_start + timedelta(hours=1),
     )
-    unique_device_ids_preceding_hour = get_unique_device_ids_seen(
+    unique_observable_ids_preceding_hour = get_unique_observable_ids_seen(
         box_id=box_settings.box_id,
         start_time=hour_start - timedelta(hours=1),
         end_time=hour_start,
     )
     seen_in_both = [
-        device_id
-        for device_id in unique_device_ids_this_hour
-        if device_id in unique_device_ids_preceding_hour
+        observable_id
+        for observable_id in unique_observable_ids_this_hour
+        if observable_id in unique_observable_ids_preceding_hour
     ]
 
     aggregation = SeenByHour(box_id=box_settings.box_id, hour_start=hour_start)
@@ -45,7 +50,7 @@ def aggregate_hour(hour_start: datetime) -> SeenByHour:
     if existing_aggregation:
         aggregation = existing_aggregation
 
-    aggregation.seen = len(unique_device_ids_this_hour)
+    aggregation.seen = len(unique_observable_ids_this_hour)
     aggregation.seen_also_in_preceding_hour = len(seen_in_both)
 
     return aggregation
@@ -54,31 +59,31 @@ def aggregate_hour(hour_start: datetime) -> SeenByHour:
 def aggregate_day(day_start: datetime) -> SeenByDay:
     """Aggregate daily seen events for the day starting at the passed time."""
     box_settings = BoxSettings.objects.first()
-    unique_device_ids_today = get_unique_device_ids_seen(
+    unique_observable_ids_today = get_unique_observable_ids_seen(
         box_id=box_settings.box_id,
         start_time=day_start,
         end_time=day_start + timedelta(days=1),
     )
-    unique_device_ids_preceding_day = get_unique_device_ids_seen(
+    unique_observable_ids_preceding_day = get_unique_observable_ids_seen(
         box_id=box_settings.box_id,
         start_time=day_start - timedelta(days=1),
         end_time=day_start,
     )
     seen_both_today_and_yesterday = [
-        device_id
-        for device_id in unique_device_ids_today
-        if device_id in unique_device_ids_preceding_day
+        observable_id
+        for observable_id in unique_observable_ids_today
+        if observable_id in unique_observable_ids_preceding_day
     ]
 
-    unique_device_ids_a_week_earlier = get_unique_device_ids_seen(
+    unique_observable_ids_a_week_earlier = get_unique_observable_ids_seen(
         box_id=box_settings.box_id,
         start_time=day_start - timedelta(days=7),
         end_time=day_start - timedelta(days=6),
     )
     seen_both_today_and_a_week_earlier = [
-        device_id
-        for device_id in unique_device_ids_today
-        if device_id in unique_device_ids_a_week_earlier
+        observable_id
+        for observable_id in unique_observable_ids_today
+        if observable_id in unique_observable_ids_a_week_earlier
     ]
 
     aggregation = SeenByDay(box_id=box_settings.box_id, day_start=day_start)
@@ -90,7 +95,7 @@ def aggregate_day(day_start: datetime) -> SeenByDay:
     if existing_aggregation:
         aggregation = existing_aggregation
 
-    aggregation.seen = len(unique_device_ids_today)
+    aggregation.seen = len(unique_observable_ids_today)
     aggregation.seen_also_on_preceding_day = len(seen_both_today_and_yesterday)
     aggregation.seen_also_a_week_earlier = len(seen_both_today_and_a_week_earlier)
 
@@ -108,11 +113,11 @@ def get_unaggregated_hours(dt_from: datetime, dt_until: datetime) -> List[dateti
             .first()
         )
         if aggregation is None:
-            # add this hour to be aggregated - if airodump was on at any time during.
+            # add this hour to be aggregated - if sensor was on at any time during.
             if (
                 TmuxStatus.objects.filter(time_stamp__gte=hour)
                 .filter(time_stamp__lt=hour + timedelta(hours=1))
-                .filter(airodump_ng=True)
+                .filter(sensor_status=True)
                 .count()
                 > 0
             ):
@@ -121,7 +126,7 @@ def get_unaggregated_hours(dt_from: datetime, dt_until: datetime) -> List[dateti
 
 
 def get_unaggregated_days(dt_from: datetime, dt_until: datetime) -> List[datetime]:
-    """Look back in time to see which days (start time) are not yet aggregated, but should be,"""
+    """Look back in time to see which days (start time) are not yet aggregated, but should be."""
     days_without_integration = []
     box_settings = BoxSettings.objects.first()
     for day in pd.date_range(as_day(dt_from), as_day(dt_until), freq="1D"):
@@ -131,11 +136,11 @@ def get_unaggregated_days(dt_from: datetime, dt_until: datetime) -> List[datetim
             .first()
         )
         if aggregation is None:
-            # add this day to be aggregated - if airodump was on at any time during.
+            # add this day to be aggregated - if sensor was on at any time during.
             if (
                 TmuxStatus.objects.filter(time_stamp__gte=day)
                 .filter(time_stamp__lt=day + timedelta(hours=24))
-                .filter(airodump_ng=True)
+                .filter(sensor_status=True)
                 .count()
                 > 0
             ):
@@ -177,7 +182,7 @@ def aggregate_data_to_db():
 
 
 class Command(BaseCommand):
-    help = "The process of aggregating the airodump data in the database"
+    help = "The process of aggregating the sensor data in the database"
 
     def handle(self, *args, **kwargs):
         aggregate_data_to_db()

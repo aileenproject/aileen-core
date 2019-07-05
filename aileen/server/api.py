@@ -11,7 +11,7 @@ from django.http import (
 )
 from django.views.decorators.csrf import csrf_exempt
 
-from data.models import SeenByDay, SeenByHour, UniqueDevices
+from data.models import SeenByDay, SeenByHour, Observables
 from data.queries import prepare_df_datetime_index
 from server.models import AileenBox
 
@@ -61,27 +61,27 @@ def post_events(request, box_id):
     """
     For boxes to upload raw event data.
 
-    Expects JSON data for devices and events, like this:
-    {"devices": [ ...], "events": [ ... ]}
+    Expects JSON data for observables and events, like this:
+    {"observables": [ ...], "events": [ ... ]}
     """
 
     logger.info(f"Got event data for Box {box_id}")
 
     # deserialize
-    devices = list(deserialize("json", request.POST.get("devices", "[]")))
-    logger.info(f"Received {len(devices)} devices.")
+    observables = list(deserialize("json", request.POST.get("observables", "[]")))
+    logger.info(f"Received {len(observables)} observables.")
     events = list(deserialize("json", request.POST.get("events", {})))
     logger.info(f"Received {len(events)} events.")
-    for device in devices:
-        existing_device = UniqueDevices.objects.filter(
-            device_id=device.object.device_id
+    for observable in observables:
+        existing_observable = Observables.objects.filter(
+            observable_id=observable.object.observable_id
         ).first()
         if (
-            existing_device
-            and existing_device.time_last_seen > device.object.time_last_seen
+            existing_observable
+            and existing_observable.time_last_seen > observable.object.time_last_seen
         ):
-            device.object.time_last_seen = existing_device.time_last_seen
-        device.save()
+            observable.object.time_last_seen = existing_observable.time_last_seen
+        observable.save()
 
     for event in events:
         if event.object.box_id != box_id:
@@ -139,7 +139,7 @@ def post_tmux_status(request, box_id):
 
 
 # home
-def average_number_of_devices_seen_by_box(request):
+def average_number_of_observables_seen_by_box(request):
     """
     For D3 bar graph
     """
@@ -151,9 +151,9 @@ def average_number_of_devices_seen_by_box(request):
     for box_id in boxes:
         box = AileenBox.objects.filter(box_id=box_id).first()
         if box is not None:
-            box_info = dict(box_name=None, mean_devices_each_day=None)
+            box_info = dict(box_name=None, mean_observables_each_day=None)
             box_info["box_name"] = box.name
-            box_info["mean_devices_each_day"] = box.average_devices_per_day
+            box_info["mean_observables_each_day"] = box.average_observables_per_day
             box_info_list.append(box_info)
 
     return JsonResponse(box_info_list, safe=False)

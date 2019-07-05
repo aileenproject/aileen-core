@@ -52,7 +52,7 @@
   <div class="row">
     <div class="col-md-5">
           <div class='chart-titles'>
-            <h2>Daily number of devices seen in each location</h2>
+            <h2>Daily number of observables seen in each location</h2>
           </div>
           <div  id="barChartContainer" style="height: 80vh;"></div>
     </div>
@@ -64,7 +64,7 @@
 
 <script src="{% static 'server/js/home-barchart.js' %}"></script>
 <script type="text/javascript">
-  const aileen_data = `{% url "server:average_number_of_devices_seen_by_box" %}`;
+  const aileen_data = `{% url "server:average_number_of_observables_seen_by_box" %}`;
   barChart({
       dataURL: aileen_data,
       chartContainerId: "barChartContainer"});
@@ -86,10 +86,10 @@
 
     function onEachFeature(feature, layer) {
       var props = feature.properties;
-      var deviceURL = `/box/${props.box_id}`;
+      var boxURL = `/box/${props.box_id}`;
       var content = `<h3>${props.name}</h3>
-        <h5>Daily devices: ${props.average_devices_per_day}</h5>
-        <a href=${deviceURL}><p>Full Dashboard</p></a>`
+        <h5>Daily devices: ${props.average_observables_per_day}</h5>
+        <a href=${boxURL}><p>Full Dashboard</p></a>`
       layer.bindPopup(content);
     }
 
