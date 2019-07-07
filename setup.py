@@ -10,6 +10,7 @@ setup(
     install_requires=[
         "pre-commit",
         "black",
+        "python-dotenv",
         "Click",
         "django==1.11.22",
         "django-bootstrap3",
@@ -17,6 +18,7 @@ setup(
         "django-leaflet",
         "django-cors-headers",
         "django-pandas",
+        "jsonfield",
         "humanize",
         "libtmux",
         "netifaces",
