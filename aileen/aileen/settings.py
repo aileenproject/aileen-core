@@ -169,7 +169,7 @@ if AILEEN_MODE in ("server", "both"):
 #  ---- General Settings
 
 # Display this in front of simply stdout printing
-TERM_LBL = "[Aileen]"
+TERM_LBL = "[Aileen-Core]"
 
 #  ---- Box Settings
 
@@ -197,6 +197,12 @@ BOX_PORT = os.environ.get("BOX_PORT", default=5656)
 SENSOR_LOG_INTERVAL_IN_SECONDS = int(
     os.environ.get("SENSOR_LOG_INTERVAL_IN_SECONDS", default=5)
 )
+
+# if this is false, no uploading will take place
+INTERNET_CONNECTION_AVAILABLE = (
+    os.environ.get("INTERNET_CONNECTION_AVAILABLE", default="yes") in TRUTH_STRINGS
+)
+
 UPLOAD_INTERVAL_IN_SECONDS = int(
     os.environ.get("UPLOAD_INTERVAL_IN_SECONDS", default=60)
 )

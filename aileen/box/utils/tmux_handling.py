@@ -3,8 +3,10 @@ from subprocess import call
 from typing import Callable
 
 import libtmux
+from django.conf import settings
 
-TERM_LBL = "[Aileen - tmuxer]"
+
+logger = logging.getLogger(__name__)
 
 
 def start_tmux_session(
@@ -13,16 +15,20 @@ def start_tmux_session(
     """start a tmux server"""
     server = libtmux.Server()
     if kill_existing and server.has_session(session_name):
-        logging.info(
-            '%s Killing the running tmux session "%s" ...' % (TERM_LBL, session_name)
+        logger.info(
+            '%s Killing the running tmux session "%s" ...'
+            % (settings.TERM_LBL, session_name)
         )
         kill_tmux_session(session_name)
     if cleanup_func is not None:
-        logging.info(
-            "%s Cleaning up by calling %s ..." % (TERM_LBL, cleanup_func.__name__)
+        logger.info(
+            "%s Cleaning up by calling %s ..."
+            % (settings.TERM_LBL, cleanup_func.__name__)
         )
         cleanup_func()
-    logging.info('%s Starting new tmux session "%s" ...' % (TERM_LBL, session_name))
+    logger.info(
+        '%s Starting new tmux session "%s" ...' % (settings.TERM_LBL, session_name)
+    )
     return server.new_session(session_name=session_name)
 
 
@@ -30,7 +36,10 @@ def kill_tmux_session(session_name: str):
     """Find and kill this session"""
     server = libtmux.Server()
     if server and server.has_session(session_name):
-        print('%s Killing the running tmux session "%s" ...' % (TERM_LBL, session_name))
+        logger.info(
+            '%s Killing the running tmux session "%s" ...'
+            % (settings.TERM_LBL, session_name)
+        )
     call(["tmux", "kill-session", "-t", session_name])
 
 
@@ -59,11 +68,11 @@ def run_command_in_tmux(
         )
 
     window.select_pane("0").send_keys(cmd, enter=True)
-    logging.debug('%s Command "%s" started' % (TERM_LBL, cmd))
+    logger.debug('%s Command "%s" started' % (settings.TERM_LBL, cmd))
 
 
 if __name__ == "__main__":
-    print("%s Starting a test tmux session ..." % TERM_LBL)
+    logger.info("%s Starting a test tmux session ..." % settings.TERM_LBL)
     new_session = start_tmux_session("test")
 
     run_command_in_tmux(

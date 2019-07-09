@@ -17,11 +17,14 @@ logger = logging.getLogger(__name__)
 def check_preconditions():
     """Check necessary preconditions before we start anything."""
     if BoxSettings.objects.count() == 0:
-        logger.error("No box settings found. Please add from the admin panel.")
+        logger.error(
+            "%s No box settings found. Please add from the admin panel."
+            % settings.TERM_LBL
+        )
         sys.exit(2)
 
     if settings.SENSOR_MODULE == "":
-        logger.error("The SENSOR_MODULE setting is not set!")
+        logger.error("% The SENSOR_MODULE setting is not set!" % settings.TERM_LBL)
         sys.exit(2)
     logger.info(
         f"{settings.TERM_LBL} Using {settings.SENSOR_MODULE} as the sensor module ..."
@@ -32,7 +35,7 @@ def check_preconditions():
         sensor.check_preconditions()
 
     if settings.HASH_OBSERVABLE_IDS is False:
-        logger.warning("HASH_OBSERVABLE_IDS is False!")
+        logger.warning("%s HASH_OBSERVABLE_IDS is False!" % settings.TERM_LBL)
 
 
 def start_sensor_in_tmux(tmux_session, new_window: bool = False):
@@ -89,11 +92,32 @@ def run_box(sudo_password: str = None):
         window_name="record_events_to_db",
     )
     logger.info(
-        "Starting to record data to the local db at %s ..."
-        % settings.DATABASES["default"].get("NAME")
+        "%s Starting to record data to the local db at %s ..."
+        % (settings.TERM_LBL, settings.DATABASES["default"].get("NAME"))
     )
 
-    # Starting the local dashboard server needs sudo rights if the port is 80
+    # now start the data aggregation
+    run_command_in_tmux(
+        tmux_session,
+        "%s %s manage.py aggregate_data" % (settings.ACTIVATE_VENV_CMD, sys.executable),
+        restart_after_n_seconds=3,
+        window_name="aggregate_data",
+    )
+    logger.info("%s Starting to aggregate data ..." % settings.TERM_LBL)
+    time.sleep(2)
+
+    # now start to monitor tmux
+    run_command_in_tmux(
+        tmux_session,
+        "%s %s manage.py monitor_tmux" % (settings.ACTIVATE_VENV_CMD, sys.executable),
+        restart_after_n_seconds=3,
+        window_name="monitor_tmux",
+    )
+    logger.info(
+        "%s Monitoring all of the running tmux sessions ..." % settings.TERM_LBL
+    )
+
+    # Starting the local dashboard server - needs sudo rights if the port is 80
     if int(settings.BOX_PORT) == 80:
         command = (
             f"echo {sudo_password} | sudo -S {settings.ACTIVATE_VENV_CMD} {sys.executable}"
@@ -104,17 +128,14 @@ def run_box(sudo_password: str = None):
     run_command_in_tmux(
         tmux_session, command, restart_after_n_seconds=3, window_name="local_dashboard"
     )
-    logger.info("Starting the local dashboard server ...")
+    logger.info("%s Starting the local dashboard server ..." % settings.TERM_LBL)
 
-    # now start the data aggregation
-    run_command_in_tmux(
-        tmux_session,
-        "%s %s manage.py aggregate_data" % (settings.ACTIVATE_VENV_CMD, sys.executable),
-        restart_after_n_seconds=3,
-        window_name="aggregate_data",
-    )
-    logger.info("Starting to aggregate data ...")
-    time.sleep(2)
+    if not settings.INTERNET_CONNECTION_AVAILABLE:
+        logger.info(
+            "%s INTERNET_CONNECTION_AVAILABLE is false, so data is not being uploaded."
+            % settings.TERM_LBL
+        )
+        return
 
     # now start the data uploader
     run_command_in_tmux(
@@ -124,16 +145,10 @@ def run_box(sudo_password: str = None):
         window_name="upload_data",
     )
     box_settings = BoxSettings.objects.first()
-    logger.info("Starting to upload data against %s ..." % box_settings.server_url)
-
-    # now start to monitor tmux
-    run_command_in_tmux(
-        tmux_session,
-        "%s %s manage.py monitor_tmux" % (settings.ACTIVATE_VENV_CMD, sys.executable),
-        restart_after_n_seconds=3,
-        window_name="monitor_tmux",
+    logger.info(
+        "%s Starting to upload data against %s ..."
+        % (settings.TERM_LBL, box_settings.server_url)
     )
-    logger.info("Monitoring all of the running tmux sessions")
 
 
 class Command(BaseCommand):
