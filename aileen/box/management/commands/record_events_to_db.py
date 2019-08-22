@@ -136,9 +136,10 @@ def sensor_data_to_db(tmp_path: str):
         for expected_column in ("observable_id", "time_seen", "value", "observations"):
             if expected_column not in sensor_data_df.columns:
                 logger.error(
-                    f"The sensor module function 'get_latest_reading_as_df' did not return a dataframe"
-                    " with the column {expected_column}."
-                    " Instead, the dataframe only has these columns: {sensor_data_df.columns}."
+                    "The sensor module function 'get_latest_reading_as_df' did not return a dataframe"
+                    " with the column %s."
+                    " Instead, the dataframe only has these columns: %s",
+                    expected_column, sensor_data_df.columns
                 )
 
         # hash observable IDs if wanted

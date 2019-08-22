@@ -35,15 +35,48 @@ Use sqlite
 - We use black for code formatting.
 - We use isort for package importing.
 
-## .env file
+## environment vaiables
 
-To run the aileen box you'll need to have the following in an `aileen/.env` file.
+To run the aileen box you'll to at least tell it how to find the sensor code. First, you need to adapt the PYTHONPATH:
 
 ```
-SENSOR_MODULE=sensor
-PYTHONPATH=$PYTHONPATH./your/path/to/sensor-module
-BOX_PORT=<some number>
+export PYTHONPATH=$PYTHONPATH./your/path/to/sensor-module
 ```
+
+Second, you need to set the name of the python module containing the sensor module functions (see above).
+For example, if the sensor module is called "sensor.py":
+
+```
+export AILEEN_SENSOR_MODULE=sensor
+```
+
+And probably you want to tell Aileen how to activate your virtual environment:
+
+```
+export AILEEN_ACTIVATE_VENV_CMD=<your command to activate the virtual environment> 
+```
+
+By the way, you can also set these environment variables (apart from PYTHONPATH!) in an `aileen/.env` file:
+
+```
+AILEEN_SENSOR_MODULE=sensor
+AILEEN_ACTIVATE_VENV_CMD=<your command to activate the virtual environment> 
+```
+
+
+These are other env variables, which you can alter (see aileen/settings for more info), either on the shell or the .env file:
+
+* AILEEN_SENSOR_FILE_PREFIX
+* AILEEN_BOX_PORT
+* AILEEN_SENSOR_LOG_INTERVAL_IN_SECONDS
+* AILEEN_INTERNET_CONNECTION_AVAILABLE
+* AILEEN_UPLOAD_INTERVAL_IN_SECONDS
+* AILEEN_UPLOAD_MAX_NUMBER_PER_REQUEST
+* AILEEN_STATUS_MONITORING_INTERVAL_IN_SECONDS
+* AILEEN_PROCESS_RESTART_INTERVAL_IN_SECONDS
+* AILEEN_HASH_OBSERVABLE_IDS
+* AILEEN_HASH_ITERATIONS
+* AILEEN_UPLOAD_EVENTS
 
 
 ## First migrations and superuser

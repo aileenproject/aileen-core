@@ -24,7 +24,7 @@ def check_preconditions():
         sys.exit(2)
 
     if settings.SENSOR_MODULE == "":
-        logger.error("% The SENSOR_MODULE setting is not set!" % settings.TERM_LBL)
+        logger.error("%s The AILEEN_SENSOR_MODULE setting is not set!" % settings.TERM_LBL)
         sys.exit(2)
     logger.info(
         f"{settings.TERM_LBL} Using {settings.SENSOR_MODULE} as the sensor module ..."
@@ -35,7 +35,7 @@ def check_preconditions():
         sensor.check_preconditions()
 
     if settings.HASH_OBSERVABLE_IDS is False:
-        logger.warning("%s HASH_OBSERVABLE_IDS is False!" % settings.TERM_LBL)
+        logger.warning("%s AILEEN_HASH_OBSERVABLE_IDS is False!" % settings.TERM_LBL)
 
 
 def start_sensor_in_tmux(tmux_session, new_window: bool = False):

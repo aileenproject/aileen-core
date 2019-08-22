@@ -174,7 +174,7 @@ TERM_LBL = "[Aileen-Core]"
 #  ---- Box Settings
 
 # If you have installed aileen in a virtual env, the tmux session needs to know how to get that activated.
-ACTIVATE_VENV_CMD = os.environ.get("ACTIVATE_VENV_CMD", default="")
+ACTIVATE_VENV_CMD = os.environ.get("AILEEN_ACTIVATE_VENV_CMD", default="")
 ACTIVATE_VENV_CMD = (
     f"{ACTIVATE_VENV_CMD};"
     if ACTIVATE_VENV_CMD and not ACTIVATE_VENV_CMD.endswith(";")
@@ -187,33 +187,35 @@ ACTIVATE_VENV_CMD = (
 #
 #           export SENSOR_MODULE=aileen_sensing_api
 #           export PYTHONPATH=$PYTHONPATH./path/to/sen
-SENSOR_MODULE = os.environ.get("SENSOR_MODULE", default="")
+SENSOR_MODULE = os.environ.get("AILEEN_SENSOR_MODULE", default="")
 
 # This can be used to find / clean up files produced by the sensor
-SENSOR_FILE_PREFIX = os.environ.get("SENSOR_FILE_PREFIX", "")
+SENSOR_FILE_PREFIX = os.environ.get("AILEEN_SENSOR_FILE_PREFIX", "")
 
-BOX_PORT = os.environ.get("BOX_PORT", default=5656)
+# the port under which the local box server can be reached (e.g. 127.0.0.1:5656)
+BOX_PORT = os.environ.get("AILEEN_BOX_PORT", default=5656)
 
 SENSOR_LOG_INTERVAL_IN_SECONDS = int(
-    os.environ.get("SENSOR_LOG_INTERVAL_IN_SECONDS", default=5)
+    os.environ.get("AILEEN_SENSOR_LOG_INTERVAL_IN_SECONDS", default=5)
 )
 
 # if this is false, no uploading will take place
 INTERNET_CONNECTION_AVAILABLE = (
-    os.environ.get("INTERNET_CONNECTION_AVAILABLE", default="yes") in TRUTH_STRINGS
+    os.environ.get("AILEEN_INTERNET_CONNECTION_AVAILABLE", default="yes")
+    in TRUTH_STRINGS
 )
 
 UPLOAD_INTERVAL_IN_SECONDS = int(
-    os.environ.get("UPLOAD_INTERVAL_IN_SECONDS", default=60)
+    os.environ.get("AILEEN_UPLOAD_INTERVAL_IN_SECONDS", default=60)
 )
 UPLOAD_MAX_NUMBER_PER_REQUEST = int(
-    os.environ.get("UPLOAD_MAX_NUMBER_PER_REQUEST", default=500)
+    os.environ.get("AILEEN_UPLOAD_MAX_NUMBER_PER_REQUEST", default=500)
 )
 STATUS_MONITORING_INTERVAL_IN_SECONDS = int(
-    os.environ.get("STATUS_MONITORING_INTERVAL_IN_SECONDS", default=60)
+    os.environ.get("AILEEN_STATUS_MONITORING_INTERVAL_IN_SECONDS", default=60)
 )
 PROCESS_RESTART_INTERVAL_IN_SECONDS = int(
-    os.environ.get("PROCESS_RESTART_INTERVAL_IN_SECONDS", default=600)
+    os.environ.get("AILEEN_PROCESS_RESTART_INTERVAL_IN_SECONDS", default=600)
 )
 
 if PROCESS_RESTART_INTERVAL_IN_SECONDS % STATUS_MONITORING_INTERVAL_IN_SECONDS != 0:
@@ -226,14 +228,14 @@ if PROCESS_RESTART_INTERVAL_IN_SECONDS % STATUS_MONITORING_INTERVAL_IN_SECONDS !
 
 # whether to hash observable IDs, defaults true
 HASH_OBSERVABLE_IDS = (
-    os.environ.get("HASH_OBSERVABLE_IDS", default="False") in TRUTH_STRINGS
+    os.environ.get("AILEEN_HASH_OBSERVABLE_IDS", default="False") in TRUTH_STRINGS
 )
 HASH_ITERATIONS = int(
-    os.environ.get("HASH_ITERATIONS", default=500_000)
+    os.environ.get("AILEEN_HASH_ITERATIONS", default=500_000)
 )  # 2013 they recommended "at least 100000"
 
-# whether boxes should upload events to the server
-UPLOAD_EVENTS = os.environ.get("UPLOAD_EVENTS", default="False") in TRUTH_STRINGS
+# whether boxes should upload events to the server (otherwise just aggregations)
+UPLOAD_EVENTS = os.environ.get("AILEEN_UPLOAD_EVENTS", default="False") in TRUTH_STRINGS
 
 # For tmux sessions and writing info to DB
 TMUX_SESSION_NAME = "aileen_tmux_session"
