@@ -6,6 +6,8 @@ All you need to implement is the code which reads your sensor data.
 
 Aileen provides a server to receive data from Aileen boxes. The server displays a dashboard with a map of the boxes and their collected data.
 
+See implementation examples at https://github.com/aileenproject (counting wifi devices & LAN-connected PCs).
+
 ## Dependencies
 
 - Make a virtual environment: `virtualenv env_aileen`
