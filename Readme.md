@@ -2,6 +2,9 @@
 
 Aileen is a sensor data aggregation tool. It can be used for any numerical sensor data, is robust and privacy-friendly.
 
+All you need to implement is the code which reads your sensor data.
+
+Aileen provides a server to receive data from Aileen boxes. The server displays a dashboard with a map of the boxes and their collected data.
 
 ## Dependencies
 
