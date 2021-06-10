@@ -12,7 +12,7 @@ setup(
         "black",
         "python-dotenv",
         "Click",
-        "django==1.11.29",
+        "django==2.2.24",
         "django-bootstrap3",
         "django-geojson",
         "django-leaflet",
